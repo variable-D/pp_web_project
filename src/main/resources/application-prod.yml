@@ -1,0 +1,16 @@
+server:
+  port: 8081
+spring:
+  datasource:
+    username: root
+    password: '0000'
+#    password: 'prepia'
+#    url: jdbc:mysql://localhost:3306/eSIM
+    url: jdbc:mysql://localhost:3306/metadb
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      dialect: org.hibernate.dialect.MySQL8Dialect
