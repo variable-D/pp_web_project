@@ -1,4 +1,4 @@
-package com.pp_web_project.service.handler;
+package com.pp_web_project.security;
 
 import com.pp_web_project.service.LoginAttemptService;
 import jakarta.servlet.ServletException;

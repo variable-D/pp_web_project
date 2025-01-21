@@ -1,44 +1,185 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>로그인</title>
     <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
     <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+
+    <style>
+        /* ✅ 전체 배경 설정 */
+        body {
+            background: linear-gradient(135deg, #1C1C1C, #2E2E2E);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #EAEAEA;
+            font-family: 'Arial', sans-serif;
+            padding: 10px;
+        }
+
+        /* ✅ Glassmorphism 로그인 카드 */
+        .login-card {
+            width: 380px;
+            padding: 30px;
+            border-radius: 15px;
+            background: rgba(50, 50, 50, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        /* ✅ 로그인 타이틀 */
+        .login-title {
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            color: #FFFFFF;
+        }
+
+        /* ✅ 입력 필드 스타일 */
+        .form-control {
+            background: rgba(20, 20, 20, 0.9);
+            color: #FFFFFF !important;
+            border: 1px solid #777;
+            border-radius: 8px;
+            transition: all 0.3s ease-in-out;
+        }
+
+        /* ✅ 플레이스홀더 색상 */
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* ✅ 입력 필드 focus 효과 */
+        .form-control:focus {
+            background: rgba(30, 30, 30, 1);
+            color: #FFFFFF !important;
+            border-color: #4A90E2;
+            box-shadow: 0 0 10px rgba(74, 144, 226, 0.8);
+            transform: scale(1.05);
+        }
+
+        /* ✅ 로그인 버튼 스타일 */
+        .btn-login {
+            background: linear-gradient(135deg, #4A90E2, #0F4C75);
+            border: none;
+            color: #FFFFFF;
+            font-size: 18px;
+            font-weight: bold;
+            padding: 12px;
+            border-radius: 8px;
+            transition: all 0.3s ease-in-out;
+        }
+
+        /* ✅ 로그인 버튼 hover 효과 */
+        .btn-login:hover {
+            background: linear-gradient(135deg, #0F4C75, #4A90E2);
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(74, 144, 226, 0.5);
+        }
+
+        /* ✅ 로그인 실패 메시지 스타일 */
+        .alert {
+            font-size: 14px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        /* ✅ 반응형 스타일 */
+        @media (max-width: 1024px) { /* 태블릿 */
+            .login-card {
+                width: 90%;
+                max-width: 400px;
+                padding: 25px;
+            }
+        }
+
+        @media (max-width: 768px) { /* 모바일 */
+            body {
+                padding: 20px;
+            }
+            .login-card {
+                width: 100%;
+                max-width: 350px;
+                padding: 20px;
+            }
+            .login-title {
+                font-size: 22px;
+            }
+            .form-control {
+                font-size: 14px;
+                height: 45px;
+            }
+            .btn-login {
+                font-size: 16px;
+                padding: 10px;
+            }
+        }
+
+        @media (max-width: 480px) { /* 작은 모바일 */
+            .login-card {
+                width: 100%;
+                max-width: 320px;
+                padding: 15px;
+            }
+            .login-title {
+                font-size: 20px;
+            }
+            .form-control {
+                font-size: 14px;
+                height: 42px;
+            }
+            .btn-login {
+                font-size: 14px;
+                padding: 8px;
+            }
+        }
+    </style>
 </head>
 <body>
-<div class="container">
-    <div class="row justify-content-center mt-5">
-        <div class="col-md-4">
-            <div class="text-center mb-4">
-                <h2>로그인</h2>
-            </div>
 
+<!-- ✅ 중앙 정렬된 로그인 카드 -->
+<div class="login-card">
+    <h2 class="login-title"> 로그인</h2>
 
-            <form action="/login" method="post">
-
-                <!-- ✅ 수정된 부분: 로그인 실패 메시지 -->
-                <div th:if="${param.error}" class="alert alert-danger" role="alert">
-                    아이디 또는 비밀번호가 일치하지 않습니다.
-                </div>
-                <!-- CSRF Token -->
-                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-
-                <div class="mb-3">
-                    <label for="userId" class="form-label">아이디</label>
-                    <input type="text" id="userId" name="userId" class="form-control" placeholder="아이디 입력." required>
-                </div>
-                <div class="mb-3">
-                    <label for="password" class="form-label">비밀번호</label>
-                    <input type="password" id="password" name="password" class="form-control" placeholder="비밀번호 입력." required>
-                </div>
-                <div class="d-grid gap-2">
-                    <button class="btn btn-primary btn-lg" type="submit">로그인</button>
-                </div>
-            </form>
+    <form action="/login" method="post">
+        <!-- 로그인 실패 메시지 -->
+        <div th:if="${param.error}" class="alert alert-danger" role="alert">
+            아이디 또는 비밀번호가 일치하지 않습니다.
+            <span th:if="${failCount >= 0}">
+                (현재 실패 횟수: <span th:text="${failCount}"></span>)
+            </span>
         </div>
-    </div>
+
+        <!-- ✅ 계정이 차단된 경우 -->
+        <div th:if="${blocked}" class="alert alert-warning" role="alert">
+            계정이 차단되었습니다. <span th:text="${remainingTime}"></span>분 후에 다시 시도하세요.
+        </div>
+
+        <!-- CSRF Token -->
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+        <div class="mb-3">
+            <label for="userId" class="form-label" style="color: #FFFFFF;">아이디</label>
+            <input type="text" id="userId" name="userId" class="form-control" placeholder="아이디 입력" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="password" class="form-label" style="color: #FFFFFF;">비밀번호</label>
+            <input type="password" id="password" name="password" class="form-control" placeholder="비밀번호 입력" required>
+        </div>
+
+        <div class="d-grid gap-2">
+            <button class="btn btn-login" type="submit">로그인</button>
+        </div>
+    </form>
 </div>
+
 </body>
 </html>
