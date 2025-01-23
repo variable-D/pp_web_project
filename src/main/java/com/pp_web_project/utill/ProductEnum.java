@@ -1,5 +1,10 @@
 package com.pp_web_project.utill;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
 public enum ProductEnum {
         JP_1GB_3D("8809365670444", "일본 1GB 3일"),
         JP_1GB_5D("8809365670451", "일본 1GB 5일"),
@@ -21,19 +26,6 @@ public enum ProductEnum {
 
         private final String code;
         private final String name;
-
-        ProductEnum(String code, String name) {
-            this.code = code;
-            this.name = name;
-        }
-
-        public String getCode() {
-            return code;
-        }
-
-        public String getName() {
-            return name;
-        }
 
         // ✅ 바코드로 제품 찾기 (조회 메서드 추가)
         public static String getProductNameByCode(String barcode) {

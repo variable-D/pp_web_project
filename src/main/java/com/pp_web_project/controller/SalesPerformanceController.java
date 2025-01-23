@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,8 +19,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 @Controller
 @Slf4j
@@ -35,15 +33,19 @@ public class SalesPerformanceController {
     public String salesPerformance(
             @RequestParam(value = "store", required = false) String storeNumber,
             @RequestParam(value = "barcode", required = false) String barcode,
+
             @RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
             Model model) {
 
         List<SftpData> salesData = null;
-        String title = "eSIM 실적 조회";
+        String title = "eSIM 정산 실적 조회";
+        Map<String, String> categoryList = new HashMap<>();
+        categoryList.put("정산 기준", "/salesPerformance");
+        categoryList.put("판매 기준", "/retail");
 
         if (startDate == null) {
-            startDate = LocalDateTime.now().minusDays(1);
+            startDate = LocalDate.now().minusDays(1).atStartOfDay();
         }
         if (endDate == null) {
             endDate = LocalDateTime.now();
@@ -70,7 +72,7 @@ public class SalesPerformanceController {
         BigDecimal totalAmount = salesData.stream()
                 .map(sale -> new BigDecimal(sale.getTransactionAmount()))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-
+        model.addAttribute("categoryList", categoryList);
         model.addAttribute("title", title);
         model.addAttribute("logo", logo);
         model.addAttribute("productList", productList);
@@ -95,7 +97,7 @@ public class SalesPerformanceController {
         try {
             List<SftpData> salesData = null;
             if (startDate == null) {
-                startDate = LocalDateTime.now().minusDays(1);
+                startDate = LocalDate.now().minusDays(1).atStartOfDay();
             }
             if (endDate == null) {
                 endDate = LocalDateTime.now();
@@ -116,7 +118,7 @@ public class SalesPerformanceController {
 
 // ✅ 파일명에 날짜 추가 (프리피아_eSIM_실적_YYYYMMDD.xlsx)
             String timestamp = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-            String fileName = "프리피아_eSIM_실적_" + timestamp + ".xlsx";
+            String fileName = "프리피아_eSIM_정산실적_" + timestamp + ".xlsx";
 
 // ✅ 한글 파일명 깨짐 방지 (UTF-8 -> ISO-8859-1)
             String encodedFileName = new String(fileName.getBytes(StandardCharsets.UTF_8), StandardCharsets.ISO_8859_1);

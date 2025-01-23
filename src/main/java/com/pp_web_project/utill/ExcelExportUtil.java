@@ -8,6 +8,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 
+import static com.pp_web_project.utill.ProductEnum.getProductNameByCode;
+
 public class ExcelExportUtil {
 
     public static byte[] exportSalesDataToExcel(List<SftpData> salesData) throws IOException {
@@ -17,7 +19,7 @@ public class ExcelExportUtil {
 
         // ✅ 1. 엑셀 헤더 생성
         Row headerRow = sheet.createRow(0);
-        String[] headers = { "가맹점 번호", "상품", "거래년월일시", "상품 가격"};
+        String[] headers = {"번호","전문일련번호","상품", "가맹점 번호", "거래년월일시","거래 구분", "상품 금액"};
 
         for (int i = 0; i < headers.length; i++) {
             Cell cell = headerRow.createCell(i);
@@ -29,11 +31,20 @@ public class ExcelExportUtil {
         int rowNum = 1;
         for (SftpData data : salesData) {
             Row row = sheet.createRow(rowNum++);
-            row.createCell(0).setCellValue(data.getId());
-            row.createCell(1).setCellValue(data.getStoreNumber());
-            row.createCell(2).setCellValue(data.getBarcode());
-            row.createCell(3).setCellValue(data.getTransactionDate().toString());
-            row.createCell(4).setCellValue(data.getTransactionAmount());
+            row.createCell(0).setCellValue(rowNum);
+            row.createCell(1).setCellValue(data.getSerialNumber());
+            row.createCell(2).setCellValue(getProductNameByCode(data.getBarcode()));
+            row.createCell(3).setCellValue(data.getStoreNumber());
+            row.createCell(4).setCellValue(data.getTransactionDate().toString());
+            // ✅ 삼항 연산자 대신 독립된 변수 사용
+            String transactionType  = null;
+            if ("01".equals(data.getDataType())) {
+                transactionType = "아웃바운드";
+            } else if ("02".equals(data.getDataType())) {
+                transactionType = "인바운드";
+            }
+            row.createCell(5).setCellValue(transactionType);
+            row.createCell(6).setCellValue(data.getTransactionAmount());
         }
 
         // ✅ 3. 파일을 ByteArray로 변환

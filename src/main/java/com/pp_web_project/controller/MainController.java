@@ -27,7 +27,8 @@ public class MainController {
         List<Map<String, String>> menuList = new ArrayList<>();
         String logo = "eSIM";
 
-        menuList.add(Map.of("name", "실적 조회", "url", "/salesPerformance"));
+        menuList.add(Map.of("name", "정산 실적 조회", "url", "/salesPerformance"));
+        menuList.add(Map.of("name", "판매 실적 조회", "url", "/retail"));
         menuList.add(Map.of("name", "Joytel 상품 현황", "url", "/joytelProducts"));
         menuList.add(Map.of("name", "판매된 상품", "url", "/soldProducts"));
 

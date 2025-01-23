@@ -80,6 +80,43 @@
             margin-top: 20px;
         }
 
+        /* ✅ 검색 폼을 정렬하는 그리드 레이아웃 */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr); /* ✅ 5열 정렬 */
+            gap: 15px;
+            width: 100%;
+            max-width: 1200px; /* ✅ 넓이를 크게 조정 */
+        }
+
+        .form-grid div {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-grid input,
+        .form-grid select {
+            width: 100%;
+            height: 45px;
+            padding: 10px;
+            font-size: 16px;
+            background: rgba(20, 20, 20, 0.9);
+            color: #EAEAEA;
+            border: 1px solid #555;
+            border-radius: 8px;
+            outline: none;
+            transition: all 0.3s ease-in-out;
+            text-align: center;
+        }
+        /* ✅ 조회 버튼 컨테이너를 중앙 정렬 */
+        .btn-container {
+            grid-column: span 5; /* ✅ 전체 너비 차지 */
+            display: flex;
+            justify-content: center; /* ✅ 가로 중앙 정렬 */
+            align-items: center;
+            margin-top: 20px;
+        }
+
         /* ✅ 모든 입력 필드와 셀렉트 박스 동일 크기 */
         input, select {
             width: 100%;
@@ -123,22 +160,23 @@
         .search-btn {
             background: linear-gradient(135deg, #6c757d, #495057);
             color: white;
-            font-size: 16px;
+            font-size: 18px;
             font-weight: bold;
             border: none;
-            padding: 10px 20px;
+            padding: 12px 20px;
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s ease-in-out;
-            width: 100%;
-            max-width: 200px;
+            width: 40%; /* ✅ 버튼 크기 조정 */
         }
+
 
         .search-btn:hover {
             background: linear-gradient(135deg, #5a6268, #343a40);
             transform: scale(1.05);
             box-shadow: 0 0 10px rgba(108, 117, 125, 0.5);
         }
+
         /* ✅ 아이폰 및 모바일에서도 강제 적용 */
         select option {
             background-color: rgba(20, 20, 20, 1) !important; /* 🔥 드롭다운 배경 강제 */
@@ -162,6 +200,11 @@
             text-align: center;
             width: 100%;
         }
+        .table th, .table td {
+            padding: 12px;
+            font-size: 16px;
+        }
+
 
         .table thead {
             background: rgba(255, 255, 255, 0.2);
@@ -251,6 +294,12 @@
                 justify-content: center;
                 width: 90%;
             }
+            .form-grid {
+                grid-template-columns: repeat(3, 1fr); /* 3열 */
+            }
+            .btn-container {
+                grid-column: span 3;
+            }
         }
 
         /* ✅ 모바일 화면 적용 */
@@ -289,6 +338,12 @@
                 font-size: 14px;
                 padding: 5px;
             }
+            .form-grid {
+                grid-template-columns: repeat(2, 1fr); /* 2열 */
+            }
+            .btn-container {
+                grid-column: span 2;
+            }
         }
 
         /* ✅ 작은 모바일 화면 (아이폰 SE 등) */
@@ -314,18 +369,28 @@
             .search-form .row {
                 flex-direction: column;
             }
+            .form-grid {
+                grid-template-columns: 1fr; /* 1열 */
+            }
+            .btn-container {
+                grid-column: span 1;
+            }
+            .search-btn {
+                width: 100%;
+            }
+
         }
 
 
     </style>
 
     <script>
-    function navigateToPage() {
-    var selectedPage = document.getElementById("categorySelect").value;
-    if (selectedPage) {
-    window.location.href = selectedPage;
-    }
-    }
+        function navigateToPage() {
+            var selectedPage = document.getElementById("categorySelect").value;
+            if (selectedPage) {
+                window.location.href = selectedPage;
+            }
+        }
     </script>
 </head>
 <body>
@@ -352,43 +417,45 @@
 
 <!-- 🔍 검색 폼 -->
 <div class="search-form">
-    <form action="/salesPerformance" method="get">
-        <div class="row">
-            <div class="col-md-3">
+    <form action="/retail" method="get">
+        <div class="form-grid">
+            <div>
                 <label for="storeSelect" class="text-white">가맹점 번호</label>
                 <input type="text" id="storeSelect" name="store" placeholder="점포 번호 입력">
             </div>
-            <div class="col-md-3">
-                <label for="barcodeSelect" class="text-white">상품</label>
-                <select id="barcodeSelect" name="barcode" class="form-select">
+            <div>
+                <label for="orderNumSelect" class="text-white">주문 번호</label>
+                <input type="text" id="orderNumSelect" name="orderNumber" placeholder="주문 번호 입력">
+            </div>
+            <div>
+                <label for="productNameSelect" class="text-white">상품</label>
+                <select id="productNameSelect" name="product" class="form-select">
                     <option value="">-- 상품 선택 --</option>
-                    <option th:each="product : ${productList}"
-                            th:value="${product.code}"
-                            th:text="${product.name}">
+                    <option th:each="product : ${productName}"
+                            th:value="${product.product}"
+                            th:text="${product.productName}">
                     </option>
                 </select>
             </div>
-            <div class="col-md-3">
+            <div>
                 <label for="startDate" class="text-white">조회 시작일</label>
                 <input type="datetime-local" id="startDate" name="startDate">
             </div>
-            <div class="col-md-3">
+            <div>
                 <label for="endDate" class="text-white">조회 종료일</label>
                 <input type="datetime-local" id="endDate" name="endDate">
             </div>
-
-        </div>
-        <div class="row mt-3">
-            <div class="col text-center">
+            <div class="btn-container">
                 <button type="submit" class="search-btn">조회</button>
             </div>
         </div>
     </form>
 </div>
 
+
 <div class="summary-container">
     <div class="col text-center">
-        <form action="/salesPerformance/download" method="get">
+        <form action="/retail/download" method="get">
             <input type="hidden" name="store" th:value="${storeNumber}">
             <input type="hidden" name="barcode" th:value="${barcode}">
             <input type="hidden" name="startDate" th:value="${startDate}">
@@ -420,34 +487,23 @@
         <thead>
         <tr>
             <th>번호</th>
-            <th>전문일련번호</th>
-            <th>상품</th>
+            <th>주문 번호</th>
+            <th>구분</th>
             <th>가맹점 번호</th>
-            <th>거래 년월일시</th>
-            <th>거래 구분</th>
+            <th>거래 년월일</th>
+            <th>거래 일시</th>
+            <th>포스</th>
+            <th>전문 일련 번호</th>
+            <th>상품</th>
+            <th>유효 기간</th>
+            <th>승인 번호</th>
+            <th> LPA </th>
             <th>상품 금액</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="data, stat : ${salesData}">
             <td th:text="${stat.count}"></td> <!-- ✅ 자동 넘버링 -->
-            <td th:text="${data.serialNumber}"></td>
-            <!-- ✅ 상품 코드에 따라 상품명을 표시 -->
-            <td th:each="product : ${productList}"
-                  th:if="${product.code == data.barcode}"
-                  th:text="${product.name}">
-            </td>
-
-            <td th:text="${data.storeNumber}"></td>
-            <!-- ✅ 날짜 포맷 변경 -->
-            <td th:text="${#temporals.format(data.transactionDate, 'yyyy-MM-dd HH:mm:ss')}"></td>
-            <td>
-                <span th:if="${data.transactionType == '01'}" class="text-primary">아웃바운드</span>
-                <span th:if="${data.transactionType == '02'}" class="text-success">인바운드</span>
-                <span th:unless="${data.transactionType == '01' or data.transactionType == '02'}"
-                      th:text="${data.transactionType}"></span>
-            </td>
-            <td th:text="${data.transactionAmount}"></td>
         </tr>
         </tbody>
     </table>
