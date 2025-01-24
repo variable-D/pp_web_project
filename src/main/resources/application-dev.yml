@@ -1,8 +1,9 @@
 server:
   port: 8082
+  forward-headers-strategy: framework
   servlet:
     session:
-      timeout: 10m  # 10분 동안 세션 유지 후 자동 로그아웃
+      timeout: 5m  # 10분 동안 세션 유지 후 자동 로그아웃
 spring:
   messages:
     basename: messages, errors

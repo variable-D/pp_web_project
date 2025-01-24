@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MAIN</title>
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+
+    <style>
+        /* ✅ 전체 배경 설정 */
+        body {
+            background: linear-gradient(135deg, #1C1C1C, #2E2E2E);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #EAEAEA;
+            font-family: 'Arial', sans-serif;
+            padding-top: 20px;
+        }
+
+        /* ✅ 로고 위치 조정 */
+        .logo-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .logo {
+            width: 130px;
+            height: 130px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: #EAEAEA;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .logo a {
+            text-decoration: none;
+            color: inherit;
+            font-weight: bold;
+        }
+
+        /* ✅ 메뉴 카드 반응형 조정 */
+        .menu-card {
+            width: 90%;
+            max-width: 400px;
+            padding: 20px;
+            background: rgba(50, 50, 50, 0.8);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            border-radius: 15px;
+            margin-top: 40px;
+        }
+
+        /* ✅ 메뉴 제목 */
+        .menu-title {
+            font-size: 20px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #EAEAEA;
+            margin-bottom: 10px;
+        }
+
+        /* ✅ 드롭다운 스타일 */
+        select.form-select {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            background: rgba(20, 20, 20, 0.9);
+            color: #EAEAEA;
+            border: 1px solid #555;
+            border-radius: 8px;
+            outline: none;
+            transition: all 0.3s ease-in-out;
+            appearance: none;
+        }
+
+        select.form-select:hover,
+        select.form-select:focus {
+            background: rgba(30, 30, 30, 1);
+            transform: scale(1.03);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+        }
+
+        /* ✅ 반응형 스타일 */
+        @media (max-width: 1024px) { /* 태블릿 */
+            .menu-card {
+                width: 85%;
+                max-width: 350px;
+                padding: 18px;
+            }
+
+            select.form-select {
+                padding: 8px;
+                font-size: 15px;
+            }
+        }
+
+        @media (max-width: 768px) { /* 모바일 */
+            .logo {
+                width: 80px;
+                height: 80px;
+                font-size: 16px;
+            }
+
+            .menu-card {
+                width: 90%;
+                max-width: 320px;
+                padding: 15px;
+                margin-top: 30px;
+            }
+
+            .menu-title {
+                font-size: 18px;
+            }
+
+            select.form-select {
+                padding: 8px;
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 480px) { /* 작은 모바일 */
+            .menu-card {
+                width: 95%;
+                max-width: 300px;
+                padding: 12px;
+            }
+
+            .menu-title {
+                font-size: 16px;
+            }
+
+            .logo {
+                width: 70px;
+                height: 70px;
+                font-size: 14px;
+            }
+
+            select.form-select {
+                font-size: 13px;
+                padding: 7px;
+            }
+        }
+    </style>
+
+    <script>
+        function navigateToPage() {
+            var selectedPage = document.getElementById("menuSelect").value;
+            if (selectedPage) {
+                window.location.href = selectedPage;
+            }
+        }
+    </script>
+</head>
+<body>
+
+<!-- ✅ 최상단 eSIM 로고 -->
+<div class="logo-container">
+    <div class="logo">
+        <a th:href="@{/admin}" th:text = "${logo}"></a>
+    </div>
+</div>
+
+<!-- ✅ 중앙 메뉴 카드 -->
+<div class="menu-card">
+    <h2 class="menu-title"> 메뉴 선택 </h2>
+    <label for="menuSelect"></label><select id="menuSelect" class="form-select" onchange="navigateToPage()">
+    <option value="">-- 메뉴 --</option>
+    <option th:each="menu : ${menuList}" th:value="@{${menu.url}}" th:text="${menu.name}"></option>
+</select>
+</div>
+
+</body>
+</html>

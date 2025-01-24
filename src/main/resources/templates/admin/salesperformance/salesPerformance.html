@@ -326,6 +326,27 @@
     window.location.href = selectedPage;
     }
     }
+
+    function copyRowData(element) {
+        let row = element.parentElement.parentElement; // 클릭한 번호의 부모 TR을 가져옴
+        let cells = row.querySelectorAll("td"); // 해당 행의 모든 TD 가져오기
+        let rowData = [];
+
+        cells.forEach((cell, index) => {
+            if (index !== 0) { // 첫 번째 열(번호)은 제외
+                rowData.push(cell.innerText.trim());
+            }
+        });
+
+        let textToCopy = rowData.join("\t"); // 탭 구분자로 합침 (엑셀 붙여넣기 가능)
+
+        // 클립보드에 복사
+        navigator.clipboard.writeText(textToCopy).then(() => {
+            alert("📋 클립보드에 복사되었습니다!");
+        }).catch(err => {
+            console.error("복사 실패:", err);
+        });
+    }
     </script>
 </head>
 <body>
@@ -333,7 +354,7 @@
 <!-- ✅ 최상단 eSIM 로고 -->
 <div class="logo-container">
     <div class="logo">
-        <a th:href="@{/}" th:text="${logo}"></a>
+        <a th:href="@{/admin}" th:text="${logo}"></a>
     </div>
 </div>
 
@@ -352,7 +373,7 @@
 
 <!-- 🔍 검색 폼 -->
 <div class="search-form">
-    <form action="/salesPerformance" method="get">
+    <form action="/admin/salesPerformance" method="get">
         <div class="row">
             <div class="col-md-3">
                 <label for="storeSelect" class="text-white">가맹점 번호</label>
@@ -388,7 +409,7 @@
 
 <div class="summary-container">
     <div class="col text-center">
-        <form action="/salesPerformance/download" method="get">
+        <form action="/admin/salesPerformance/download" method="get">
             <input type="hidden" name="store" th:value="${storeNumber}">
             <input type="hidden" name="barcode" th:value="${barcode}">
             <input type="hidden" name="startDate" th:value="${startDate}">
@@ -430,7 +451,11 @@
         </thead>
         <tbody>
         <tr th:each="data, stat : ${salesData}">
-            <td th:text="${stat.count}"></td> <!-- ✅ 자동 넘버링 -->
+            <td>
+                <a href="#" th:text="${stat.count}" onclick="copyRowData(this)" style="cursor: pointer; text-decoration: none; color: #FFD700;">
+                    <!-- ✅ 클릭하면 해당 행의 내용을 복사 -->
+                </a>
+            </td>
             <td th:text="${data.serialNumber}"></td>
             <!-- ✅ 상품 코드에 따라 상품명을 표시 -->
             <td th:each="product : ${productList}"

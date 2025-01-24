@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>실적 조회</title>
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+
+    <style>
+        /* ✅ 전체 배경 설정 */
+        body {
+            background: linear-gradient(135deg, #1C1C1C, #2E2E2E);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #EAEAEA;
+            font-family: 'Arial', sans-serif;
+            padding-top: 20px;
+        }
+
+        /* ✅ 제목 스타일 */
+        h2 {
+            color: #EAEAEA;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        /* ✅ 로고 설정 */
+        .logo-container {
+            position: relative;
+            top: -10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .logo {
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: bold;
+            color: #EAEAEA;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .logo a {
+            text-decoration: none;
+            color: inherit;
+            font-weight: bold;
+        }
+
+        /* ✅ 검색 폼 스타일 */
+        .search-form {
+            width: 100%;
+            max-width: 1000px;
+            padding: 20px;
+            background: rgba(50, 50, 50, 0.8);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        /* ✅ 검색 폼을 정렬하는 그리드 레이아웃 */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr); /* ✅ 5열 정렬 */
+            gap: 15px;
+            width: 100%;
+            max-width: 1200px; /* ✅ 넓이를 크게 조정 */
+        }
+
+        .form-grid div {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-grid input,
+        .form-grid select {
+            width: 100%;
+            height: 45px;
+            padding: 10px;
+            font-size: 16px;
+            background: rgba(20, 20, 20, 0.9);
+            color: #EAEAEA;
+            border: 1px solid #555;
+            border-radius: 8px;
+            outline: none;
+            transition: all 0.3s ease-in-out;
+            text-align: center;
+        }
+        /* ✅ 조회 버튼 컨테이너를 중앙 정렬 */
+        .btn-container {
+            grid-column: span 5; /* ✅ 전체 너비 차지 */
+            display: flex;
+            justify-content: center; /* ✅ 가로 중앙 정렬 */
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        /* ✅ 모든 입력 필드와 셀렉트 박스 동일 크기 */
+        input, select {
+            width: 100%;
+            max-width: 250px;
+            height: 40px;
+            padding: 10px;
+            font-size: 16px;
+            background: rgba(20, 20, 20, 0.9);
+            color: #EAEAEA;
+            border: 1px solid #555;
+            border-radius: 8px;
+            outline: none;
+            transition: all 0.3s ease-in-out;
+            appearance: none;
+        }
+
+        /* ✅ 모든 환경에서 동일한 select 스타일 */
+        select {
+            width: 100%;
+            max-width: 250px;
+            height: 40px;
+            padding: 10px;
+            font-size: 16px;
+            background-color: rgba(20, 20, 20, 0.9) !important; /* 🔥 강제 배경색 적용 */
+            color: #EAEAEA !important; /* 🔥 강제 텍스트 색상 적용 */
+            border: 1px solid #555 !important;
+            border-radius: 8px;
+            outline: none;
+            transition: all 0.3s ease-in-out;
+            -webkit-appearance: none !important;
+            -moz-appearance: none !important;
+            appearance: none !important;
+            background-image: url("data:image/svg+xml;utf8,<svg fill='%23EAEAEA' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5H7z'/></svg>");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 16px;
+            padding-right: 30px;
+        }
+
+        /* ✅ 반응형 버튼 스타일 */
+        .search-btn {
+            background: linear-gradient(135deg, #6c757d, #495057);
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            width: 40%; /* ✅ 버튼 크기 조정 */
+        }
+
+
+        .search-btn:hover {
+            background: linear-gradient(135deg, #5a6268, #343a40);
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(108, 117, 125, 0.5);
+        }
+
+        /* ✅ 아이폰 및 모바일에서도 강제 적용 */
+        select option {
+            background-color: rgba(20, 20, 20, 1) !important; /* 🔥 드롭다운 배경 강제 */
+            color: #EAEAEA !important; /* 🔥 드롭다운 텍스트 색상 강제 */
+        }
+
+        /* ✅ 데이터 테이블 스타일 */
+        .table-container {
+            width: 100%;
+            max-width: 1000px;
+            margin-top: 20px;
+            background: rgba(50, 50, 50, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            padding: 15px;
+            overflow-x: auto; /* ✅ 테이블 가로 스크롤 적용 */
+        }
+
+        .table {
+            color: white;
+            text-align: center;
+            width: 100%;
+        }
+        .table th, .table td {
+            padding: 12px;
+            font-size: 16px;
+        }
+
+
+        .table thead {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* ✅ 총 조회 건수 스타일 */
+        .summary-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 15px;
+            width: 100%;
+            max-width: 1000px;
+        }
+
+        .summary-table {
+            width: 280px;
+            background: rgba(50, 50, 50, 0.9);
+            border-radius: 10px;
+            padding: 10px;
+            text-align: left;
+        }
+
+        .summary-table td {
+            padding: 8px 15px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #EAEAEA;
+        }
+
+
+        /* ✅ 엑셀 다운로드 버튼 스타일 */
+        .download-btn {
+            background: linear-gradient(135deg, #6c757d, #495057);
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            width: 100%;
+            max-width: 1000px; /* ✅ 총 조회 건수 테이블과 동일한 크기로 확장 */
+            margin-bottom: 10px; /* ✅ 버튼과 테이블 사이 여백 추가 */
+        }
+
+        .download-btn:hover {
+            background: linear-gradient(135deg, #5a6268, #343a40);
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(108, 117, 125, 0.5);
+        }
+
+        /* ✅ 구분 Select 박스를 오른쪽 정렬 */
+        .category-container {
+            width: 100%;
+            max-width: 1000px;
+            display: flex;
+            justify-content: flex-end; /* 👉 오른쪽 정렬 */
+            margin-bottom: 10px; /* 여백 추가 */
+        }
+
+        .category-container select {
+            width: 200px; /* 적절한 크기 지정 */
+        }
+        /* ✅ 반응형 적용 */
+        @media (max-width: 1024px) { /* 태블릿 화면 */
+            .search-form {
+                width: 90%;
+            }
+            input, select {
+                max-width: 100%;
+                background-color: rgba(20, 20, 20, 0.9) !important; /* 🔥 강제 배경색 적용 */
+                color: #EAEAEA !important; /* 🔥 강제 텍스트 색상 적용 */
+                border: 1px solid #555 !important;
+                -webkit-appearance: none !important;
+                -moz-appearance: none !important;
+                appearance: none !important;
+            }
+            .table-container {
+                max-width: 90%;
+            }
+            .summary-container {
+                justify-content: center;
+                width: 90%;
+            }
+            .form-grid {
+                grid-template-columns: repeat(3, 1fr); /* 3열 */
+            }
+            .btn-container {
+                grid-column: span 3;
+            }
+        }
+
+        /* ✅ 모바일 화면 적용 */
+        @media (max-width: 768px) {
+            .search-form {
+                width: 100%;
+                padding: 15px;
+            }
+            .logo {
+                width: 100px;
+                height: 100px;
+                font-size: 18px;
+            }
+            input, select {
+                max-width: 100%;
+                height: 45px;
+                background-color: rgba(20, 20, 20, 0.9) !important;
+                color: #EAEAEA !important;
+                border: 1px solid #555 !important;
+            }
+            .search-btn, .download-btn {
+                max-width: 100%;
+                height: 45px;
+            }
+            .table-container {
+                overflow-x: scroll;
+            }
+            .summary-container {
+                justify-content: center;
+                width: 100%;
+            }
+            .summary-table {
+                width: 100%;
+            }
+            .table th, .table td {
+                font-size: 14px;
+                padding: 5px;
+            }
+            .form-grid {
+                grid-template-columns: repeat(2, 1fr); /* 2열 */
+            }
+            .btn-container {
+                grid-column: span 2;
+            }
+        }
+
+        /* ✅ 작은 모바일 화면 (아이폰 SE 등) */
+        @media (max-width: 480px) {
+            .search-form {
+                padding: 10px;
+            }
+            .logo {
+                width: 80px;
+                height: 80px;
+                font-size: 16px;
+            }
+            input, select, .search-btn, .download-btn {
+                height: 50px;
+                font-size: 14px;
+                background-color: rgba(20, 20, 20, 0.9) !important;
+                color: #EAEAEA !important;
+            }
+            .table th, .table td {
+                font-size: 12px;
+                padding: 3px;
+            }
+            .search-form .row {
+                flex-direction: column;
+            }
+            .form-grid {
+                grid-template-columns: 1fr; /* 1열 */
+            }
+            .btn-container {
+                grid-column: span 1;
+            }
+            .search-btn {
+                width: 100%;
+            }
+
+        }
+
+
+    </style>
+
+    <script>
+        function navigateToPage() {
+            var selectedPage = document.getElementById("categorySelect").value;
+            if (selectedPage) {
+                window.location.href = selectedPage;
+            }
+        }
+
+        function copyRowData(element) {
+            let row = element.parentElement.parentElement; // 클릭한 번호의 부모 TR을 가져옴
+            let cells = row.querySelectorAll("td"); // 해당 행의 모든 TD 가져오기
+            let rowData = [];
+
+            cells.forEach((cell, index) => {
+                if (index !== 0) { // 첫 번째 열(번호)은 제외
+                    rowData.push(cell.innerText.trim());
+                }
+            });
+
+            let textToCopy = rowData.join("\t"); // 탭 구분자로 합침 (엑셀 붙여넣기 가능)
+
+            // 클립보드에 복사
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                alert("📋 클립보드에 복사되었습니다!");
+            }).catch(err => {
+                console.error("복사 실패:", err);
+            });
+        }
+    </script>
+</head>
+<body>
+
+<!-- ✅ 최상단 eSIM 로고 -->
+<div class="logo-container">
+    <div class="logo">
+        <a th:href="@{/admin}" th:text="${logo}"></a>
+    </div>
+</div>
+
+<h2 th:text="${title}"></h2>
+
+<div class="category-container">
+    <label for="categorySelect" class="text-white"></label>
+    <select id="categorySelect" name="category" class="form-select" onchange="navigateToPage()">
+        <option value="">-- 구분 --</option>
+        <option th:each="entry : ${categoryList.entrySet()}"
+                th:value="${entry.value}"
+                th:text="${entry.key}">
+        </option>
+    </select>
+</div>
+
+<!-- 🔍 검색 폼 -->
+<div class="search-form">
+    <form action="/admin/retail" method="get">
+        <div class="form-grid">
+            <div>
+                <label for="storeSelect" class="text-white">가맹점 번호</label>
+                <input type="text" id="storeSelect" name="store" placeholder="점포 번호 입력">
+            </div>
+            <div>
+                <label for="orderNumSelect" class="text-white">주문 번호</label>
+                <input type="text" id="orderNumSelect" name="orderNumber" placeholder="주문 번호 입력">
+            </div>
+            <div>
+                <label for="productNameSelect" class="text-white">상품</label>
+                <select id="productNameSelect" name="product" class="form-select">
+                    <option value="">-- 상품 선택 --</option>
+                    <option th:each="product : ${productName}"
+                            th:value="${product.product}"
+                            th:text="${product.productName}">
+                    </option>
+                </select>
+            </div>
+            <div>
+                <label for="startDate" class="text-white">조회 시작일</label>
+                <input type="date" id="startDate" name="startDate">
+            </div>
+            <div>
+                <label for="endDate" class="text-white">조회 종료일</label>
+                <input type="date" id="endDate" name="endDate">
+            </div>
+            <div class="btn-container">
+                <button type="submit" class="search-btn">조회</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+<div class="summary-container">
+    <div class="col text-center">
+        <form action="/admin/retail/download" method="get">
+            <input type="hidden" name="store" th:value="${storeNumber}">
+            <input type="hidden" name="orderNumber" th:value="${orderNumber}">
+            <input type="hidden" name="product" th:value="${product}">
+            <input type="hidden" name="startDate" th:value="${startDate}">
+            <input type="hidden" name="endDate" th:value="${endDate}">
+            <button type="submit" class="download-btn">📥 엑셀 다운로드</button>
+        </form>
+    </div>
+</div>
+<!-- ✅ 총 조회 건수 & 총 금액을 테이블 형식으로 배치 -->
+<div class="summary-container">
+
+    <table class="summary-table">
+        <tr>
+            <td>총 조회 건수:</td>
+            <td><span th:text="${salesData != null ? #lists.size(salesData) : 0}"></span> 건</td>
+        </tr>
+        <tr>
+            <td>총 금액:</td>
+            <td><span th:text="${#numbers.formatInteger(totalAmount, 1, 'COMMA')}"></span> 원</td>
+        </tr>
+    </table>
+</div>
+<!-- 📊 데이터 출력 테이블 -->
+<div class="table-container">
+
+
+    <table class="table table-dark table-striped mt-3">
+        <thead>
+        <tr>
+            <th>번호</th>
+            <th>주문 번호</th>
+            <th>구분</th>
+            <th>가맹점 번호</th>
+            <th>거래 년월일</th>
+            <th>거래 일시</th>
+            <th>포스</th>
+            <th>전문 일련 번호</th>
+            <th>상품</th>
+            <th>유효 기간</th>
+            <th>승인 번호</th>
+            <th> LPA </th>
+            <th>상품 금액</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="data, stat : ${salesData}">
+            <td>
+                <a href="#" th:text="${stat.count}" onclick="copyRowData(this)" style="cursor: pointer; text-decoration: none; color: #FFD700;">
+                    <!-- ✅ 클릭하면 해당 행의 내용을 복사 -->
+                </a>
+            </td>
+            <td th:text="${data.manageNo.trim()}"></td>
+            <td th:text="${productInBoundOrOutBound.getInboundOrOutbound(data.plunm.trim())}"></td>
+            <td th:text="${data.storeNo.trim()}"></td>
+            <td th:text="${data.saleDate.trim()}"></td>
+            <td th:text="${data.saleTime.trim()}"></td>
+            <td th:text="${data.posNo.trim()}"></td>
+            <td th:text="${data.dealDatDom.trim()}"></td>
+            <td th:text="${productNameUtil.getProductName(data.plunm.trim())}"></td>
+            <td th:text="${data.validTerm.trim()}"></td>
+            <td th:text="${data.okNo.trim()}"></td>
+            <td th:text="${data.pinNo1.trim()}"></td>
+            <td th:text="${productAmountUtil.getProductAmount(data.plunm.trim())}"></td>
+
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>

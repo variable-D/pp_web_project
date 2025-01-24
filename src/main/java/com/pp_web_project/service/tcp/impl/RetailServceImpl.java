@@ -23,6 +23,11 @@ public class RetailServceImpl implements RetailService {
     public List<TcpResponseData> getProductData(String plunm, String saleDateAfter, String saleDateBefore) {
         return tcpResponseDataRepository.findProductData(plunm, saleDateAfter, saleDateBefore);
     }
+    @Override
+    public List<TcpResponseData> getStoreProductData(String storeNo, String plunm, String saleDateAfter, String saleDateBefore) {
+        return tcpResponseDataRepository.findStoreProductData(plunm, storeNo, saleDateAfter, saleDateBefore);
+    }
+
 
     @Override
     public List<TcpResponseData> getAllData(String saleDateAfter, String saleDateBefore) {
@@ -30,7 +35,7 @@ public class RetailServceImpl implements RetailService {
     }
 
     @Override
-    public TcpResponseData getManageNo(String manageNo) {
+    public List<TcpResponseData> getManageNo(String manageNo) {
         return tcpResponseDataRepository.findByManageNo(manageNo);
     }
 }

@@ -1,12 +1,17 @@
 server:
-  port: 8081
+  port: 8082
+  forward-headers-strategy: framework
+  servlet:
+    session:
+      timeout: 5m  # 10분 동안 세션 유지 후 자동 로그아웃
 spring:
+  messages:
+    basename: messages, errors
   datasource:
     username: root
-    password: '0000'
-#    password: 'prepia'
-#    url: jdbc:mysql://localhost:3306/eSIM
-    url: jdbc:mysql://localhost:3306/metadb
+    #    password: '0000'
+    password: 'prepia'
+    url: jdbc:mysql://localhost:3306/eSIM
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
@@ -14,3 +19,4 @@ spring:
       ddl-auto: update
     properties:
       dialect: org.hibernate.dialect.MySQL8Dialect
+    show-sql: true

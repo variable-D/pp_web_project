@@ -8,5 +8,6 @@ public interface RetailService {
     List<TcpResponseData> getStoreData(String storeNo, String saleDateAfter, String saleDateBefore);
     List<TcpResponseData> getProductData(String plunm, String saleDateAfter, String saleDateBefore);
     List<TcpResponseData> getAllData(String saleDateAfter, String saleDateBefore);
-    TcpResponseData getManageNo(String manageNo);
+    List <TcpResponseData> getManageNo(String manageNo);
+    List<TcpResponseData> getStoreProductData(String plunm, String storeNo, String saleDateAfter, String saleDateBefore);
 }

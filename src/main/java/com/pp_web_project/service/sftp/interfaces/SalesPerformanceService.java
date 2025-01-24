@@ -8,6 +8,7 @@ import java.util.List;
 public interface SalesPerformanceService {
     List<SftpData> getSalesByStoreNumber(String storeNumber, LocalDateTime startDate, LocalDateTime endDate);
     List<SftpData> getSalesByBarcode(String barcode, LocalDateTime startDate, LocalDateTime endDate);
+    List<SftpData> getSalesByStoreNumberAndBarcode(String storeNumber, String barcode, LocalDateTime startDate, LocalDateTime endDate);
     List<SftpData> getFindByTransactionDateBetween(LocalDateTime startDate, LocalDateTime endDate);
 }
 

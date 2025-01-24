@@ -6,8 +6,8 @@ import lombok.Getter;
 
 @Entity
 @Getter
-@Table(name = "admin")
-public class Admin {
+@Table(name = "user")
+public class Users {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
@@ -18,5 +18,4 @@ public class Admin {
 
     @Column(name = "password", nullable = false)
     private String password;
-
 }

@@ -91,6 +91,43 @@
             text-align: center;
         }
 
+        .alert-container {
+            display: flex;
+            justify-content: center;
+            animation: fadeIn 0.6s ease-in-out;
+            margin-bottom: 12px;  /* ✅ 입력 필드와 간격 추가 */
+        }
+
+        /* ✅ 경고 박스 (더 깔끔한 스타일) */
+        .alert-box {
+            background: rgba(255, 77, 77, 0.9);
+            color: #fff;
+            font-size: 14px;
+            font-weight: bold;
+            padding: 12px 15px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(255, 77, 77, 0.4);
+        }
+
+        /* ✅ 경고 아이콘 */
+        .alert-icon {
+            margin-right: 8px;
+            font-size: 18px;
+        }
+
+        /* ✅ 부드러운 나타남 효과 */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
         /* ✅ 반응형 스타일 */
         @media (max-width: 1024px) { /* 태블릿 */
             .login-card {
@@ -120,6 +157,10 @@
                 font-size: 16px;
                 padding: 10px;
             }
+            .alert-box {
+                font-size: 13px;
+                padding: 10px 12px;
+            }
         }
 
         @media (max-width: 480px) { /* 작은 모바일 */
@@ -139,6 +180,15 @@
                 font-size: 14px;
                 padding: 8px;
             }
+            .alert-box {
+                font-size: 12px;
+                padding: 8px 10px;
+                border-radius: 6px;
+            }
+            .alert-icon {
+                font-size: 16px;
+                margin-right: 6px;
+            }
         }
     </style>
 </head>
@@ -156,6 +206,15 @@
                 (현재 실패 횟수: <span th:text="${failCount}"></span>)
             </span>
         </div>
+
+        <!-- ✅ 로그인 실패 메시지 (아이디 또는 비밀번호 오류) -->
+        <div th:if="${errorMessage}" class="alert-container">
+            <div class="alert-box">
+                <span class="alert-icon">⚠</span>
+                <span th:text="${errorMessage}"></span>
+            </div>
+        </div>
+
 
         <!-- ✅ 계정이 차단된 경우 -->
         <div th:if="${blocked}" class="alert alert-warning" role="alert">

@@ -2,6 +2,7 @@ package com.pp_web_project.security;
 
 import com.pp_web_project.service.LoginAttemptService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -9,8 +10,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+@Slf4j
 @RequiredArgsConstructor
 public class CustomAuthenticationProvider implements AuthenticationProvider {
 
@@ -23,18 +26,32 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         String userId = authentication.getName();
         String password = authentication.getCredentials().toString();
 
+        log.info("[AUTHENTICATION ATTEMPT] User: {}", userId);
+
+        // ✅ 1. 사용자 정보 조회
+        UserDetails userDetails;
+        try {
+            userDetails = userDetailsService.loadUserByUsername(userId);
+        } catch (UsernameNotFoundException e) {
+            log.warn("[LOGIN FAILED] User: {} - 존재하지 않는 아이디", userId);
+            throw new BadCredentialsException("USER_NOT_FOUND");
+        }
+
+        // ✅ 2. 로그인 차단된 사용자 즉시 처리
         if (loginAttemptService.isBlocked(userId)) {
-            throw new BadCredentialsException("계정이 잠겼습니다. 나중에 다시 시도하세요.");
+            long remainingTime = loginAttemptService.getRemainingBlockTime(userId);
+            log.warn("[LOGIN BLOCKED] User: {} - {}분 후 가능", userId, remainingTime);
+            throw new BadCredentialsException("BLOCKED");
         }
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername(userId);
-
+        // ✅ 3. 비밀번호 검증
         if (!passwordEncoder.matches(password, userDetails.getPassword())) {
+            log.warn("[LOGIN FAILED] User: {} - 비밀번호 불일치", userId);
             loginAttemptService.loginFailed(userId);
-            int failCount = loginAttemptService.getFailedAttempts(userId);
-            throw new BadCredentialsException("아이디 또는 비밀번호가 일치하지 않습니다. (실패 횟수: " + failCount + ")");
+            throw new BadCredentialsException("WRONG_PASSWORD");
         }
 
+        log.info("[LOGIN SUCCESS] User: {}", userId);
         loginAttemptService.loginSucceeded(userId);
         return new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());
     }

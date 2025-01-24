@@ -5,6 +5,8 @@ import com.pp_web_project.repository.SftpDataRepository;
 import com.pp_web_project.service.sftp.interfaces.SalesPerformanceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,6 +26,11 @@ public class SalesPerformanceServiceImpl implements SalesPerformanceService {
     @Override
     public List<SftpData> getSalesByBarcode(String barcode, LocalDateTime startDate, LocalDateTime endDate) {
         return sftpDataRepository.findByBarcodeAndTransactionDateBetween(barcode, startDate, endDate);
+    }
+
+    @Override
+    public List<SftpData> getSalesByStoreNumberAndBarcode(String storeNumber, String barcode, LocalDateTime startDate, LocalDateTime endDate) {
+        return sftpDataRepository.findByStoreNumberAndBarcodeAndTransactionDateBetween(storeNumber, barcode, startDate, endDate);
     }
 
     @Override

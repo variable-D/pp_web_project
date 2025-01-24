@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class LoginAttemptService {
 
     private static final int MAX_ATTEMPTS = 5; // 최대 로그인 실패 횟수
-    private static final long BLOCK_TIME = 10 * 60 * 1000; // 10분 (밀리초 단위)
+    private static final long BLOCK_TIME = 5 * 60 * 1000; // 10분 (밀리초 단위)
 
     private final Map<String, Integer> attemptsCache = new ConcurrentHashMap<>();
     private final Map<String, Long> blockTimestamps = new ConcurrentHashMap<>();
@@ -19,14 +19,20 @@ public class LoginAttemptService {
      * 로그인 실패 시 실패 횟수를 증가시키고 차단 여부를 결정
      */
     public void loginFailed(String userId) {
+        if (isBlocked(userId)) {
+            log.warn("[LOGIN FAILED IGNORED] User: {} is already blocked.", userId);
+            return; // ✅ 차단된 경우 실패 횟수를 증가시키지 않음
+        }
+
         int attempts = attemptsCache.getOrDefault(userId, 0) + 1;
         attemptsCache.put(userId, attempts);
 
         if (attempts >= MAX_ATTEMPTS) {
             blockTimestamps.put(userId, System.currentTimeMillis());
+            log.info("[USER BLOCKED] User: {}", userId);
         }
 
-        log.info("[LOGIN FAILED] User: {}, Fail Count: {}", userId, attempts); // ✅ 실패 횟수 로그 추가
+        log.info("[LOGIN FAILED] User: {}, Fail Count: {}", userId, attempts);
     }
 
     /**
@@ -64,8 +70,9 @@ public class LoginAttemptService {
         }
 
         log.info("[BLOCKED] User: {}", userId);
-        return true;
+        return true; // ✅ 차단된 경우 true 반환
     }
+
 
     /**
      * 사용자의 차단이 해제될 때까지 남은 시간을 분 단위로 반환

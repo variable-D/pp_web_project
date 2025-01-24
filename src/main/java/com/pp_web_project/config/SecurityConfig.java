@@ -32,16 +32,18 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/css/**", "/js/**").permitAll()  // ✅ 로그인 없이 접근 허용
-                        .anyRequest().authenticated()  // ✅ 나머지 모든 요청은 로그인해야 접근 가능
+                        .requestMatchers("/admin/**").hasRole("ADMIN")  // ✅ 관리자만 접근 가능
+                        .requestMatchers("/user/**").hasRole("USER")    // ✅ 일반 사용자만 접근 가능
+                        .requestMatchers("/", "/login", "/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll()
+                        .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
-                        .loginPage("/login")  // ✅ 로그인 페이지 설정
+                        .loginPage("/login")
                         .loginProcessingUrl("/login")
                         .usernameParameter("userId")
                         .passwordParameter("password")
-                        .failureHandler(authenticationFailureHandler)
-                        .successHandler(authenticationSuccessHandler)
+                        .defaultSuccessUrl("/redirect", true)  // ✅ 로그인 성공 후 리디렉트 (ROLE_ADMIN → /admin, ROLE_USER → /user)
+                        .failureHandler(authenticationFailureHandler)  // ✅ 로그인 실패 핸들러는 유지
                         .permitAll()
                 )
                 .logout(logout -> logout
@@ -49,18 +51,20 @@ public class SecurityConfig {
                         .logoutSuccessUrl("/login")
                         .permitAll()
                 )
-                // ✅ 세션 관리 설정 추가
                 .sessionManagement(session -> session
-                        .sessionFixation().migrateSession() // 세션 고정 공격 방지
-                        .invalidSessionUrl("/login?sessionExpired=true") // 세션 만료 시 이동할 페이지
-                        .sessionConcurrency(concurrency -> concurrency // 동시 로그인 관리
-                                .maximumSessions(10) // 동시에 허용할 최대 세션 수
-                                .expiredUrl("/login?sessionExpired=true") // 세션 만료 시 이동할 페이지
+                        .sessionFixation().migrateSession()
+                        .invalidSessionUrl("/login?sessionExpired=true")
+                        .sessionConcurrency(concurrency -> concurrency
+                                .maximumSessions(10)
+                                .expiredUrl("/login?sessionExpired=true")
                         )
-                );
+                )
+                .csrf(csrf -> csrf.ignoringRequestMatchers("/login"));
 
         return http.build();
     }
+
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {

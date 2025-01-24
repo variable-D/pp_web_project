@@ -9,6 +9,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "tcp_response_data")
 public class TcpResponseData {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -391,6 +391,27 @@
                 window.location.href = selectedPage;
             }
         }
+
+        function copyRowData(element) {
+            let row = element.parentElement.parentElement; // 클릭한 번호의 부모 TR을 가져옴
+            let cells = row.querySelectorAll("td"); // 해당 행의 모든 TD 가져오기
+            let rowData = [];
+
+            cells.forEach((cell, index) => {
+                if (index !== 0) { // 첫 번째 열(번호)은 제외
+                    rowData.push(cell.innerText.trim());
+                }
+            });
+
+            let textToCopy = rowData.join("\t"); // 탭 구분자로 합침 (엑셀 붙여넣기 가능)
+
+            // 클립보드에 복사
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                alert("📋 클립보드에 복사되었습니다!");
+            }).catch(err => {
+                console.error("복사 실패:", err);
+            });
+        }
     </script>
 </head>
 <body>
@@ -398,7 +419,7 @@
 <!-- ✅ 최상단 eSIM 로고 -->
 <div class="logo-container">
     <div class="logo">
-        <a th:href="@{/}" th:text="${logo}"></a>
+        <a th:href="@{/user}" th:text="${logo}"></a>
     </div>
 </div>
 
@@ -417,7 +438,7 @@
 
 <!-- 🔍 검색 폼 -->
 <div class="search-form">
-    <form action="/retail" method="get">
+    <form action="/user/retail" method="get">
         <div class="form-grid">
             <div>
                 <label for="storeSelect" class="text-white">가맹점 번호</label>
@@ -439,11 +460,11 @@
             </div>
             <div>
                 <label for="startDate" class="text-white">조회 시작일</label>
-                <input type="datetime-local" id="startDate" name="startDate">
+                <input type="date" id="startDate" name="startDate">
             </div>
             <div>
                 <label for="endDate" class="text-white">조회 종료일</label>
-                <input type="datetime-local" id="endDate" name="endDate">
+                <input type="date" id="endDate" name="endDate">
             </div>
             <div class="btn-container">
                 <button type="submit" class="search-btn">조회</button>
@@ -455,12 +476,12 @@
 
 <div class="summary-container">
     <div class="col text-center">
-        <form action="/retail/download" method="get">
+        <form action="/user/retail/download" method="get">
             <input type="hidden" name="store" th:value="${storeNumber}">
-            <input type="hidden" name="barcode" th:value="${barcode}">
+            <input type="hidden" name="orderNumber" th:value="${orderNumber}">
+            <input type="hidden" name="product" th:value="${product}">
             <input type="hidden" name="startDate" th:value="${startDate}">
             <input type="hidden" name="endDate" th:value="${endDate}">
-
             <button type="submit" class="download-btn">📥 엑셀 다운로드</button>
         </form>
     </div>
@@ -503,7 +524,24 @@
         </thead>
         <tbody>
         <tr th:each="data, stat : ${salesData}">
-            <td th:text="${stat.count}"></td> <!-- ✅ 자동 넘버링 -->
+            <td>
+                <a href="#" th:text="${stat.count}" onclick="copyRowData(this)" style="cursor: pointer; text-decoration: none; color: #FFD700;">
+                    <!-- ✅ 클릭하면 해당 행의 내용을 복사 -->
+                </a>
+            </td>
+            <td th:text="${data.manageNo.trim()}"></td>
+            <td th:text="${productInBoundOrOutBound.getInboundOrOutbound(data.plunm.trim())}"></td>
+            <td th:text="${data.storeNo.trim()}"></td>
+            <td th:text="${data.saleDate.trim()}"></td>
+            <td th:text="${data.saleTime.trim()}"></td>
+            <td th:text="${data.posNo.trim()}"></td>
+            <td th:text="${data.dealDatDom.trim()}"></td>
+            <td th:text="${productNameUtil.getProductName(data.plunm.trim())}"></td>
+            <td th:text="${data.validTerm.trim()}"></td>
+            <td th:text="${data.okNo.trim()}"></td>
+            <td th:text="${data.pinNo1.trim()}"></td>
+            <td th:text="${productAmountUtil.getProductAmount(data.plunm.trim())}"></td>
+
         </tr>
         </tbody>
     </table>

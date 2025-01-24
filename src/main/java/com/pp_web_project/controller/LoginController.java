@@ -2,13 +2,17 @@ package com.pp_web_project.controller;
 
 import com.pp_web_project.service.LoginAttemptService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.Collection;
 
 @Controller
 @RequiredArgsConstructor
@@ -17,31 +21,34 @@ public class LoginController {
     private final LoginAttemptService loginAttemptService;
 
     @GetMapping("/login")
-    public String loginPage(HttpServletRequest request, Model model) {
+    public String loginPage(HttpServletRequest request, Model model, HttpSession session) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        // ✅ 로그인된 사용자가 "/login"으로 접근하면 "/main/index"로 리다이렉트
+        // ✅ 로그인된 사용자가 "/login"으로 접근하면 등급별 페이지로 리다이렉트
         if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
-            return "redirect:/main/index";
+            Collection<? extends GrantedAuthority> authorities = auth.getAuthorities();
+            for (GrantedAuthority authority : authorities) {
+                if ("ROLE_ADMIN".equals(authority.getAuthority())) {
+                    return "redirect:/admin";
+                } else if ("ROLE_USER".equals(authority.getAuthority())) {
+                    return "redirect:/user";
+                }
+            }
+            return "redirect:/"; // ✅ 등급이 없을 경우 기본 홈으로 리다이렉트
         }
 
-        // ✅ 로그인 실패 횟수 가져오기
-        String userId = request.getParameter("userId");
-        String failCountParam = request.getParameter("failCount");
-
-        int failCount = (failCountParam != null) ? Integer.parseInt(failCountParam) : 0;
-        model.addAttribute("failCount", failCount);
-
-        if (userId != null && loginAttemptService.isBlocked(userId)) {
-            long remainingTime = loginAttemptService.getRemainingBlockTime(userId);
-            model.addAttribute("blocked", true);
-            model.addAttribute("remainingTime", remainingTime);
-        } else {
-            model.addAttribute("blocked", false);
+        // ✅ 세션에서 오류 메시지 가져오기 (한 번 가져온 후 삭제하여 중복 표시 방지)
+        String errorMessage = (String) session.getAttribute("errorMessage");
+        if (errorMessage != null) {
+            model.addAttribute("errorMessage", errorMessage);
+            session.removeAttribute("errorMessage"); // ✅ 가져온 후 삭제
         }
 
-        return "html/login/login";
+        return "login/login"; // ✅ 로그인 페이지 반환
     }
+
+
+
 
     @GetMapping("/login-fail")
     public String loginFail(HttpServletRequest request, RedirectAttributes redirectAttributes) {

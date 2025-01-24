@@ -1,4 +1,4 @@
-package com.pp_web_project.utill;
+package com.pp_web_project.util;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

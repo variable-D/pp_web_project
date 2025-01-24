@@ -24,6 +24,14 @@ public interface TcpResponseDataRepository extends JpaRepository<TcpResponseData
             @Param("saleDateBefore") String saleDateBefore
     );
 
+    @Query("SELECT t FROM TcpResponseData t WHERE t.plunm = :plunm AND t.storeNo = :storeNo AND t.saleDate BETWEEN :saleDateAfter AND :saleDateBefore AND t.resCd = '0000'")
+    List<TcpResponseData> findStoreProductData(
+            @Param("plunm") String plunm,
+            @Param("storeNo") String storeNo,
+            @Param("saleDateAfter") String saleDateAfter,
+            @Param("saleDateBefore") String saleDateBefore
+    );
+
     // 특정 기간 동안의 전체 데이터 조회
     @Query("SELECT t FROM TcpResponseData t WHERE t.saleDate BETWEEN :saleDateAfter AND :saleDateBefore AND t.resCd = '0000'")
     List<TcpResponseData> findAllData(
@@ -33,7 +41,7 @@ public interface TcpResponseDataRepository extends JpaRepository<TcpResponseData
 
     // 주문번호로 조회
     @Query("SELECT t FROM TcpResponseData t WHERE t.manageNo = :manageNo AND t.resCd = '0000'")
-    TcpResponseData findByManageNo(
+    List<TcpResponseData> findByManageNo(
             @Param("manageNo") String manageNo
     );
 
