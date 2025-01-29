@@ -59,7 +59,12 @@ public class SecurityConfig {
                                 .expiredUrl("/login?sessionExpired=true")
                         )
                 )
-                .csrf(csrf -> csrf.ignoringRequestMatchers("/login"));
+                // ✅ CSRF 예외 처리 추가
+                .csrf(csrf -> csrf.ignoringRequestMatchers(
+                        "/login",  // 로그인 요청
+                        "/admin/joytel/products/update"  // PATCH 요청을 허용할 엔드포인트
+                ));
+
 
         return http.build();
     }

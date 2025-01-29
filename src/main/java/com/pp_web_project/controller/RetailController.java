@@ -34,7 +34,7 @@ public class RetailController {
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd");
 
-    @GetMapping("/admin/retail")
+    @GetMapping("/admin/sales/retail")
     public String AdminRetail(
             @RequestParam(value = "store", required = false) String storeNumber,
             @RequestParam(value = "orderNumber", required = false) String orderNumber,
@@ -46,9 +46,10 @@ public class RetailController {
 
         List<TcpResponseData> salesData = null;
         String title = "eSIM 판매 실적 조회";
-        Map<String, String> categoryList = new HashMap<>();
-        categoryList.put("정산 기준", "/admin/salesPerformance");
-        categoryList.put("판매 기준", "/admin/retail");
+        Map<String, String> categoryList = new LinkedHashMap<>();
+        categoryList.put("판매 기준", "/admin/sales/retail");
+        categoryList.put("정산 기준", "/admin/sales/performance");
+
 
         // ✅ 기본값: 오늘 00:00 ~ 23:59 조회
         if (startDate == null) {
@@ -118,7 +119,7 @@ public class RetailController {
         return "admin/retail/retail";
     }
 
-    @GetMapping("/admin/retail/download")
+    @GetMapping("/admin/sales/retail/download")
     public ResponseEntity<byte[]> adminDownloadExcel(
             @RequestParam(value = "store", required = false) String storeNumber,
             @RequestParam(value = "orderNumber", required = false) String orderNumber,
@@ -196,7 +197,7 @@ public class RetailController {
         }
     }
 
-    @GetMapping("/user/retail")
+    @GetMapping("/user/sales/retail")
     public String UserRetail(
             @RequestParam(value = "store", required = false) String storeNumber,
             @RequestParam(value = "orderNumber", required = false) String orderNumber,
@@ -208,9 +209,9 @@ public class RetailController {
 
         List<TcpResponseData> salesData = null;
         String title = "eSIM 판매 실적 조회";
-        Map<String, String> categoryList = new HashMap<>();
-        categoryList.put("정산 기준", "/user/salesPerformance");
-        categoryList.put("판매 기준", "/user/retail");
+        Map<String, String> categoryList = new LinkedHashMap<>();
+        categoryList.put("판매 기준", "/user/sales/retail");
+        categoryList.put("정산 기준", "/user/sales/performance");
 
         // ✅ 기본값: 오늘 00:00 ~ 23:59 조회
         if (startDate == null) {
@@ -280,7 +281,7 @@ public class RetailController {
         return "user/retail/retail";
     }
 
-    @GetMapping("/user/retail/download")
+    @GetMapping("/user/sales/retail/download")
     public ResponseEntity<byte[]> userDownloadExcel(
             @RequestParam(value = "store", required = false) String storeNumber,
             @RequestParam(value = "orderNumber", required = false) String orderNumber,

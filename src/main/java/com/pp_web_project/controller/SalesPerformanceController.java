@@ -28,7 +28,7 @@ public class SalesPerformanceController {
 
     private final SalesPerformanceServiceImpl salesPerformanceService;
 
-    @GetMapping("/admin/salesPerformance")
+    @GetMapping("/admin/sales/performance")
     public String adminSalesPerformance(
             @RequestParam(value = "store", required = false) String storeNumber,
             @RequestParam(value = "barcode", required = false) String barcode,
@@ -41,9 +41,9 @@ public class SalesPerformanceController {
 
 
         String title = "eSIM 정산 실적 조회";
-        Map<String, String> categoryList = new HashMap<>();
-        categoryList.put("정산 기준", "/admin/salesPerformance");
-        categoryList.put("판매 기준", "/admin/retail");
+        Map<String, String> categoryList = new LinkedHashMap<>();
+        categoryList.put("정산 기준", "/admin/sales/performance");
+        categoryList.put("판매 기준", "/admin/sales/retail");
 
 
 
@@ -103,7 +103,7 @@ public class SalesPerformanceController {
     }
 
 
-    @GetMapping("/admin/salesPerformance/download")
+    @GetMapping("/admin/sales/performance/download")
     public ResponseEntity<byte[]> adminDownloadSalesReport(
             @RequestParam(value = "store", required = false) String storeNumber,
             @RequestParam(value = "barcode", required = false) String barcode,
@@ -173,7 +173,7 @@ public class SalesPerformanceController {
 
 
 
-    @GetMapping("/user/salesPerformance")
+    @GetMapping("/user/sales/performance")
     public String userSalesPerformance(
             @RequestParam(value = "store", required = false) String storeNumber,
             @RequestParam(value = "barcode", required = false) String barcode,
@@ -186,9 +186,9 @@ public class SalesPerformanceController {
 
 
         String title = "eSIM 정산 실적 조회";
-        Map<String, String> categoryList = new HashMap<>();
-        categoryList.put("정산 기준", "/user/salesPerformance");
-        categoryList.put("판매 기준", "/user/retail");
+        Map<String, String> categoryList = new LinkedHashMap<>();
+        categoryList.put("정산 기준", "/user/sales/performance");
+        categoryList.put("판매 기준", "/user/sales/retail");
 
         // 1) 날짜 기본값 처리
         if (startDate == null) {
@@ -248,7 +248,7 @@ public class SalesPerformanceController {
     /**
      * ✅ 엑셀 다운로드 엔드포인트
      */
-    @GetMapping("/user/salesPerformance/download")
+    @GetMapping("/user/sales/performance/download")
     public ResponseEntity<byte[]> userDownloadSalesReport(
             @RequestParam(value = "store", required = false) String storeNumber,
             @RequestParam(value = "barcode", required = false) String barcode,

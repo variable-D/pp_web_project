@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>JOYTEL 재고 현황</title>
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #1C1C1C, #2E2E2E);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #EAEAEA;
+            font-family: 'Arial', sans-serif;
+            padding-top: 20px;
+        }
+
+        h2 {
+            color: #EAEAEA;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        /* ✅ 로고 설정 */
+        .logo-container {
+            position: relative;
+            top: -10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .logo {
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: bold;
+            color: #EAEAEA;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .logo a {
+            text-decoration: none;
+            color: inherit;
+            font-weight: bold;
+        }
+
+        .search-form {
+            width: 100%;
+            max-width: 800px;
+            padding: 20px;
+            background: rgba(50, 50, 50, 0.8);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        /* ✅ 모든 입력 필드와 셀렉트 박스 동일 크기 */
+        input, select {
+            width: 100%;
+            max-width: 250px;
+            height: 40px;
+            padding: 10px;
+            font-size: 16px;
+            background: rgba(20, 20, 20, 0.9);
+            color: #EAEAEA;
+            border: 1px solid #555;
+            border-radius: 8px;
+            outline: none;
+            transition: all 0.3s ease-in-out;
+            appearance: none;
+        }
+
+        /* ✅ 모든 환경에서 동일한 select 스타일 */
+        select {
+            width: 100%;
+            max-width: 250px;
+            height: 40px;
+            padding: 10px;
+            font-size: 16px;
+            background-color: rgba(20, 20, 20, 0.9) !important; /* 🔥 강제 배경색 적용 */
+            color: #EAEAEA !important; /* 🔥 강제 텍스트 색상 적용 */
+            border: 1px solid #555 !important;
+            border-radius: 8px;
+            outline: none;
+            transition: all 0.3s ease-in-out;
+            -webkit-appearance: none !important;
+            -moz-appearance: none !important;
+            appearance: none !important;
+            background-image: url("data:image/svg+xml;utf8,<svg fill='%23EAEAEA' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5H7z'/></svg>");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 16px;
+            padding-right: 30px;
+        }
+
+
+        .search-btn:hover {
+            background: linear-gradient(135deg, #5a6268, #343a40);
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(108, 117, 125, 0.5);
+        }
+
+        /* ✅ 아이폰 및 모바일에서도 강제 적용 */
+        select option {
+            background-color: rgba(20, 20, 20, 1) !important; /* 🔥 드롭다운 배경 강제 */
+            color: #EAEAEA !important; /* 🔥 드롭다운 텍스트 색상 강제 */
+        }
+
+
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .search-btn, .download-btn {
+            background: linear-gradient(135deg, #6c757d, #495057);
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            width: 100%;
+            max-width: 250px;
+        }
+
+        .search-btn:hover, .download-btn:hover {
+            background: linear-gradient(135deg, #5a6268, #343a40);
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(108, 117, 125, 0.5);
+        }
+
+        .summary-container {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 800px;
+            margin-top: 15px;
+        }
+
+        .summary-table {
+            background: rgba(50, 50, 50, 0.9);
+            border-radius: 10px;
+            padding: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #EAEAEA;
+            text-align: center;
+        }
+
+        .table-container {
+            width: 100%;
+            max-width: 800px;
+            margin-top: 20px;
+            background: rgba(50, 50, 50, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            padding: 15px;
+            overflow-x: auto;
+        }
+
+        .table {
+            color: white;
+            text-align: center;
+            width: 100%;
+        }
+
+        .table th, .table td {
+            padding: 12px;
+            font-size: 16px;
+        }
+
+        .table thead {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* ✅ 태블릿 (1024px 이하) */
+        @media (max-width: 1024px) {
+            .search-form {
+                width: 90%;
+            }
+            .table-container {
+                max-width: 95%;
+            }
+            .summary-container {
+                justify-content: center;
+                width: 95%;
+            }
+            .btn-container {
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 10px;
+                width: 100%;
+            }
+        }
+
+        /* ✅ 모바일 (768px 이하) */
+        @media (max-width: 768px) {
+            .search-form {
+                width: 100%;
+                padding: 15px;
+            }
+            .table-container {
+                max-width: 100%;
+                overflow-x: auto;
+                padding: 15px;
+            }
+            .btn-container {
+                flex-direction: column;
+                align-items: center;
+                gap: 5px;
+            }
+            .search-btn, .download-btn {
+                width: 90%;
+                font-size: 14px;
+                padding: 8px 15px;
+            }
+            .table th, .table td {
+                font-size: 14px;
+                padding: 5px;
+            }
+            .summary-container {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
+            .summary-table {
+                width: 100%;
+                text-align: center;
+            }
+        }
+
+        /* ✅ 작은 모바일 (480px 이하) */
+        @media (max-width: 480px) {
+            .search-form {
+                padding: 10px;
+            }
+            .table-container {
+                padding: 10px;
+                overflow-x: auto;
+            }
+            .table th, .table td {
+                font-size: 12px;
+                padding: 4px;
+            }
+            .btn-container {
+                flex-direction: column;
+                align-items: center;
+                gap: 5px;
+            }
+            .search-btn, .download-btn {
+                width: 100%;
+                height: 40px;
+                font-size: 14px;
+            }
+        }
+
+    </style>
+
+    <script>
+        function navigateToPage() {
+            var selectedPage = document.getElementById("categorySelect").value;
+            if (selectedPage) {
+                window.location.href = selectedPage;
+            }
+        }
+
+        function copyRowData(element) {
+            let row = element.closest("tr");
+            let rowData = Array.from(row.children).slice(1).map(td => td.innerText.trim());
+            let textToCopy = rowData.join("\t");
+
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                alert("📋 클립보드에 복사되었습니다!");
+            }).catch(err => {
+                console.error("복사 실패:", err);
+            });
+        }
+    </script>
+</head>
+<body>
+
+<!-- ✅ 최상단 eSIM 로고 -->
+<div class="logo-container">
+    <div class="logo">
+        <a th:href="@{/admin}" th:text="${logo}"></a>
+    </div>
+</div>
+
+<h2>JOYTEL 재고 현황</h2>
+
+<div class="category-container">
+    <select id="categorySelect" name="category" class="form-select" onchange="navigateToPage()">
+        <option value="">-- 구분 --</option>
+        <option th:each="entry : ${categoryList.entrySet()}" th:value="${entry.value}" th:text="${entry.key}"></option>
+    </select>
+</div>
+
+<div class="search-form">
+    <form action="/admin/joytel/products/inventory" method="get">
+        <label for="productNameSelect" class="text-white">상품</label>
+        <select id="productNameSelect" name="product" class="form-select">
+            <option value="">-- 상품 선택 --</option>
+            <option th:each="joytelProductName : ${joytelProductNameList}"
+                    th:value="${joytelProductName.product}"
+                    th:text="${joytelProductName.productName}"></option>
+        </select>
+        <div class="btn-container">
+            <button type="submit" class="search-btn">조회</button>
+        </div>
+    </form>
+</div>
+
+<div class="summary-container">
+    <form action="/admin/joytel/products/inventory/download" method="get">
+        <input type="hidden" name="products" th:value="${products}">
+        <button type="submit" class="download-btn">📥 엑셀 다운로드</button>
+    </form>
+
+    <div class="summary-table">
+        <div>총 조회 건수: <span th:text="${inventory != null ? #lists.size(inventory) : 0}"></span> 건</div>
+    </div>
+</div>
+
+<div class="table-container">
+    <table class="table table-dark table-striped">
+        <thead>
+        <tr>
+            <th>번호</th>
+            <th>상품명</th>
+            <th>일자</th>
+            <th>리딤 날짜</th>
+            <th>유효 기간</th>
+            <th>Lpa</th>
+            <th>쿠폰</th>
+            <th>트랜스 아이디</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="data, stat : ${inventory}">
+            <td><a href="#" th:text="${stat.count}" onclick="copyRowData(this)" style="cursor: pointer; text-decoration: none; color: #FFD700;"></a></td>
+            <td th:text="${joytelProductAndNameList.getJoytelPoructName(data.getProductCode())}"></td>
+            <td th:text="${data.getDays()}"></td>
+            <td th:text="${data.getInputDate()}"></td>
+            <td th:text="${data.getValidity()}"></td>
+            <td th:text="${data.getLpa()}"></td>
+            <td th:text="${data.getCoupon()}"></td>
+            <td th:text="${data.getTransId()}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>

@@ -46,10 +46,13 @@ public class MainController {
         List<Map<String, String>> menuList = new ArrayList<>();
         String logo = "eSIM";
 
-        menuList.add(Map.of("name", "정산 실적 조회", "url", "/admin/salesPerformance"));
-        menuList.add(Map.of("name", "판매 실적 조회", "url", "/admin/retail"));
-        menuList.add(Map.of("name", "Joytel 상품 현황", "url", "/admin/joytelProducts"));
-        menuList.add(Map.of("name", "판매된 상품", "url", "/admin/soldProducts"));
+        menuList.add(Map.of("name", "정산 실적 조회", "url", "/admin/sales/performance")); // ✅ `/sales/performance`로 구체화
+        menuList.add(Map.of("name", "판매 실적 조회", "url", "/admin/sales/retail")); // ✅ `/sales/retail`로 명확하게 정리
+
+        menuList.add(Map.of("name", "Joytel 재고 현황", "url", "/admin/joytel/products/inventory")); // ✅ inventory가 더 자연스러움
+        menuList.add(Map.of("name", "Joytel 유효 기간 10일 이하 상품 목록", "url", "/admin/joytel/products/expiring")); // ✅ products 리소스 명시
+        menuList.add(Map.of("name", "Joytel 판매 완료 상품 목록", "url", "/admin/joytel/products/sold")); // ✅ products 리소스 명시
+        menuList.add(Map.of("name", "SK 판매 완료 상품 목록", "url", "/admin/sk/products/sold")); // ✅ products 리소스 명시
 
         model.addAttribute("logo", logo);
         model.addAttribute("menuList", menuList);
@@ -60,8 +63,9 @@ public class MainController {
         List<Map<String, String>> menuList = new ArrayList<>();
         String logo = "eSIM";
 
-        menuList.add(Map.of("name", "정산 실적 조회", "url", "/user/salesPerformance"));
-        menuList.add(Map.of("name", "판매 실적 조회", "url", "/user/retail"));
+        menuList.add(Map.of("name", "정산 실적 조회", "url", "/user/sales/performance")); // ✅ `/sales/performance`로 구체화
+        menuList.add(Map.of("name", "판매 실적 조회", "url", "/user/sales/retail")); // ✅ `/sales/retail`로 명확하게 정리
+        ;
 
         model.addAttribute("logo", logo);
         model.addAttribute("menuList", menuList);

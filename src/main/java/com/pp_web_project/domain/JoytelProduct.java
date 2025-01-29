@@ -44,4 +44,8 @@ public class JoytelProduct {
 
     @Column(name = "trans_id")
     private String transId;
+
+    @Column(name = "order_num")
+    private String orderNum = "0";
+
 }

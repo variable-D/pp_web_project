@@ -1,6 +1,8 @@
 package com.pp_web_project.util;
 
+import com.pp_web_project.domain.JoytelProduct;
 import com.pp_web_project.domain.SftpData;
+import com.pp_web_project.domain.SkProductDetalis;
 import com.pp_web_project.domain.TcpResponseData;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -166,6 +168,274 @@ public class ExcelExportUtil {
         return out.toByteArray();
     }
 
+
+    public static byte[] exportJoytelInventoryListExcel(List<JoytelProduct> inventory, JoytelProductCodeAndProductNameUtil joytelProductCodeAndProductNameUtil) throws IOException {
+        Workbook workbook = new XSSFWorkbook();
+
+        LocalDate now = LocalDate.now();
+        Sheet sheet = workbook.createSheet("JOYTEL_상품 현황_" + now);
+
+        // ✅ 1. 엑셀 헤더 생성
+        Row headerRow = sheet.createRow(0);
+        String[] headers = {"번호", "상품명", "일자", "리딤 날짜", "유효 기간", "Lpa", "쿠폰", "트랜스 아이디"};
+
+        CellStyle headerStyle = getHeaderCellStyle(workbook);
+        for (int i = 0; i < headers.length; i++) {
+            Cell cell = headerRow.createCell(i);
+            cell.setCellValue(headers[i]);
+            cell.setCellStyle(headerStyle);
+        }
+
+        // ✅ 헤더 행 높이 증가
+        headerRow.setHeightInPoints(35);
+
+        // ✅ 2. 데이터 추가
+        int rowNum = 1;
+        int no = 1;
+        CellStyle numericStyle = getNumericCellStyle(workbook);
+
+        for (JoytelProduct data : inventory) {
+            Row row = sheet.createRow(rowNum++);
+            boolean isOddRow = rowNum % 2 != 0; // 홀수/짝수 행 구분
+
+            row.createCell(0).setCellValue(no);
+            row.createCell(1).setCellValue(joytelProductCodeAndProductNameUtil.getJoytelPoructName(data.getProductCode()));
+            row.createCell(2).setCellValue(data.getDays());
+            row.createCell(3).setCellValue(data.getInputDate());
+            row.createCell(4).setCellValue(data.getValidity());
+            row.createCell(5).setCellValue(data.getLpa());
+            row.createCell(6).setCellValue(data.getCoupon());
+            row.createCell(7).setCellValue(data.getTransId());
+            no++;
+
+            // ✅ 스타일 적용 (홀수/짝수 행 색상 적용)
+            CellStyle rowStyle = getAlternatingRowStyle(workbook, isOddRow);
+            for (int i = 0; i < headers.length; i++) {
+                Cell cell = row.getCell(i);
+                if (i == 6) { // 🔥 "상품 금액"은 숫자 스타일 적용
+                    cell.setCellStyle(numericStyle);
+                } else {
+                    cell.setCellStyle(rowStyle);
+                }
+            }
+
+            row.setHeightInPoints(20);
+        }
+
+        // ✅ 3. 열 너비 최적화
+        int[] columnWidths = {3000, 4000, 4000, 5000, 4000, 15000, 6000, 9000};
+        for (int i = 0; i < headers.length; i++) {
+            sheet.setColumnWidth(i, columnWidths[i]);
+        }
+
+        // ✅ 4. 파일 변환
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        workbook.write(out);
+        workbook.close();
+
+        return out.toByteArray();
+    }
+
+    public static byte[] exportJoytelSoldItemListExcel(List<JoytelProduct> inventory, JoytelProductCodeAndProductNameUtil joytelProductCodeAndProductNameUtil) throws IOException {
+        Workbook workbook = new XSSFWorkbook();
+
+        LocalDate now = LocalDate.now();
+        Sheet sheet = workbook.createSheet("JOYTEL_판매 완료된 상품_" + now);
+
+        // ✅ 1. 엑셀 헤더 생성
+        Row headerRow = sheet.createRow(0);
+        String[] headers = {"번호","주문 번호", "상품명", "일자", "리딤 날짜", "유효 기간", "Lpa", "쿠폰", "트랜스 아이디"};
+
+        CellStyle headerStyle = getHeaderCellStyle(workbook);
+        for (int i = 0; i < headers.length; i++) {
+            Cell cell = headerRow.createCell(i);
+            cell.setCellValue(headers[i]);
+            cell.setCellStyle(headerStyle);
+        }
+
+        // ✅ 헤더 행 높이 증가
+        headerRow.setHeightInPoints(35);
+
+        // ✅ 2. 데이터 추가
+        int rowNum = 1;
+        int no = 1;
+        CellStyle numericStyle = getNumericCellStyle(workbook);
+
+        for (JoytelProduct data : inventory) {
+            Row row = sheet.createRow(rowNum++);
+            boolean isOddRow = rowNum % 2 != 0; // 홀수/짝수 행 구분
+
+            row.createCell(0).setCellValue(no);
+            row.createCell(1).setCellValue(data.getOrderNum());
+            row.createCell(2).setCellValue(joytelProductCodeAndProductNameUtil.getJoytelPoructName(data.getProductCode()));
+            row.createCell(3).setCellValue(data.getDays());
+            row.createCell(4).setCellValue(data.getInputDate());
+            row.createCell(5).setCellValue(data.getValidity());
+            row.createCell(6).setCellValue(data.getLpa());
+            row.createCell(7).setCellValue(data.getCoupon());
+            row.createCell(8).setCellValue(data.getTransId());
+            no++;
+
+            // ✅ 스타일 적용 (홀수/짝수 행 색상 적용)
+            CellStyle rowStyle = getAlternatingRowStyle(workbook, isOddRow);
+            for (int i = 0; i < headers.length; i++) {
+                Cell cell = row.getCell(i);
+                if (i == 6) { // 🔥 "상품 금액"은 숫자 스타일 적용
+                    cell.setCellStyle(numericStyle);
+                } else {
+                    cell.setCellStyle(rowStyle);
+                }
+            }
+
+            row.setHeightInPoints(20);
+        }
+
+        // ✅ 3. 열 너비 최적화
+        int[] columnWidths = {3000, 5000, 4000, 4000, 5000, 4000, 15000, 6000, 9000};
+        for (int i = 0; i < headers.length; i++) {
+            sheet.setColumnWidth(i, columnWidths[i]);
+        }
+
+        // ✅ 4. 파일 변환
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        workbook.write(out);
+        workbook.close();
+
+        return out.toByteArray();
+    }
+
+    public static byte[] exportJoytelRefundItemListExcel(List<JoytelProduct> inventory, JoytelProductCodeAndProductNameUtil joytelProductCodeAndProductNameUtil) throws IOException {
+        Workbook workbook = new XSSFWorkbook();
+
+        LocalDate now = LocalDate.now();
+        Sheet sheet = workbook.createSheet("JOYTEL_환불 상품_" + now);
+
+        // ✅ 1. 엑셀 헤더 생성
+        Row headerRow = sheet.createRow(0);
+        String[] headers = {"번호", "상품명", "일자", "리딤 날짜", "유효 기간", "Lpa", "쿠폰", "트랜스 아이디"};
+
+        CellStyle headerStyle = getHeaderCellStyle(workbook);
+        for (int i = 0; i < headers.length; i++) {
+            Cell cell = headerRow.createCell(i);
+            cell.setCellValue(headers[i]);
+            cell.setCellStyle(headerStyle);
+        }
+
+        // ✅ 헤더 행 높이 증가
+        headerRow.setHeightInPoints(35);
+
+        // ✅ 2. 데이터 추가
+        int rowNum = 1;
+        int no = 1;
+        CellStyle numericStyle = getNumericCellStyle(workbook);
+
+        for (JoytelProduct data : inventory) {
+            Row row = sheet.createRow(rowNum++);
+            boolean isOddRow = rowNum % 2 != 0; // 홀수/짝수 행 구분
+
+            row.createCell(0).setCellValue(no);
+            row.createCell(1).setCellValue(joytelProductCodeAndProductNameUtil.getJoytelPoructName(data.getProductCode()));
+            row.createCell(2).setCellValue(data.getDays());
+            row.createCell(3).setCellValue(data.getInputDate());
+            row.createCell(4).setCellValue(data.getValidity());
+            row.createCell(5).setCellValue(data.getLpa());
+            row.createCell(6).setCellValue(data.getCoupon());
+            row.createCell(7).setCellValue(data.getTransId());
+            no++;
+
+            // ✅ 스타일 적용 (홀수/짝수 행 색상 적용)
+            CellStyle rowStyle = getAlternatingRowStyle(workbook, isOddRow);
+            for (int i = 0; i < headers.length; i++) {
+                Cell cell = row.getCell(i);
+                if (i == 6) { // 🔥 "상품 금액"은 숫자 스타일 적용
+                    cell.setCellStyle(numericStyle);
+                } else {
+                    cell.setCellStyle(rowStyle);
+                }
+            }
+
+            row.setHeightInPoints(20);
+        }
+
+        // ✅ 3. 열 너비 최적화
+        int[] columnWidths = {3000, 4000, 4000, 5000, 4000, 15000, 6000, 9000};
+        for (int i = 0; i < headers.length; i++) {
+            sheet.setColumnWidth(i, columnWidths[i]);
+        }
+
+        // ✅ 4. 파일 변환
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        workbook.write(out);
+        workbook.close();
+
+        return out.toByteArray();
+    }
+
+    public static byte[] exportSoldSkItemsToExcel(List<SkProductDetalis> skItems) throws IOException {
+        Workbook workbook = new XSSFWorkbook();
+
+        LocalDate now = LocalDate.now();
+        Sheet sheet = workbook.createSheet("sk 판매된 상품_" + now);
+
+        // ✅ 1. 엑셀 헤더 생성
+        Row headerRow = sheet.createRow(0);
+        String[] headers = {"번호", "주무 번호", "서비스 번호", "MGMT 번호", "수량", "Lpa"};
+
+        CellStyle headerStyle = getHeaderCellStyle(workbook);
+        for (int i = 0; i < headers.length; i++) {
+            Cell cell = headerRow.createCell(i);
+            cell.setCellValue(headers[i]);
+            cell.setCellStyle(headerStyle);
+        }
+
+        // ✅ 헤더 행 높이 증가
+        headerRow.setHeightInPoints(35);
+
+        // ✅ 2. 데이터 추가
+        int rowNum = 1;
+        int no = 1;
+        CellStyle numericStyle = getNumericCellStyle(workbook);
+
+        for (SkProductDetalis data : skItems) {
+            Row row = sheet.createRow(rowNum++);
+            boolean isOddRow = rowNum % 2 != 0; // 홀수/짝수 행 구분
+
+            row.createCell(0).setCellValue(no);
+            row.createCell(1).setCellValue(data.getOrderNum());
+            row.createCell(2).setCellValue(data.getRomingPhoneNum());
+            row.createCell(3).setCellValue(data.getRentalMgmtNum());
+            row.createCell(4).setCellValue(data.getTotalCnt());
+            row.createCell(5).setCellValue(data.getEsimMappingId());
+
+            no++;
+
+            // ✅ 스타일 적용 (홀수/짝수 행 색상 적용)
+            CellStyle rowStyle = getAlternatingRowStyle(workbook, isOddRow);
+            for (int i = 0; i < headers.length; i++) {
+                Cell cell = row.getCell(i);
+                if (i == 6) { // 🔥 "상품 금액"은 숫자 스타일 적용
+                    cell.setCellStyle(numericStyle);
+                } else {
+                    cell.setCellStyle(rowStyle);
+                }
+            }
+
+            row.setHeightInPoints(20);
+        }
+
+        // ✅ 3. 열 너비 최적화
+        int[] columnWidths = {3000, 5000, 5000, 5000, 3000, 15000};
+        for (int i = 0; i < headers.length; i++) {
+            sheet.setColumnWidth(i, columnWidths[i]);
+        }
+
+        // ✅ 4. 파일 변환
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        workbook.write(out);
+        workbook.close();
+
+        return out.toByteArray();
+    }
 
     // ✅ 헤더 스타일 (굵은 글씨 + 배경색 + 중앙 정렬)
     private static CellStyle getHeaderCellStyle(Workbook workbook) {

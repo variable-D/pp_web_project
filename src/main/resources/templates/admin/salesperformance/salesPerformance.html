@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>실적 조회</title>
+    <title>정산 실적 조회</title>
     <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
     <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 
@@ -373,7 +373,7 @@
 
 <!-- 🔍 검색 폼 -->
 <div class="search-form">
-    <form action="/admin/salesPerformance" method="get">
+    <form action="/admin/sales/performance" method="get">
         <div class="row">
             <div class="col-md-3">
                 <label for="storeSelect" class="text-white">가맹점 번호</label>
@@ -409,7 +409,7 @@
 
 <div class="summary-container">
     <div class="col text-center">
-        <form action="/admin/salesPerformance/download" method="get">
+        <form action="/admin/sales/performance/download" method="get">
             <input type="hidden" name="store" th:value="${storeNumber}">
             <input type="hidden" name="barcode" th:value="${barcode}">
             <input type="hidden" name="startDate" th:value="${startDate}">
