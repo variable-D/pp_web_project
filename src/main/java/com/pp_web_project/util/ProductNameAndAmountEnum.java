@@ -11,7 +11,7 @@ public enum ProductNameAndAmountEnum {
     JP_1GB_7D("eSIM-JP1G-07", 6900),
     JP_1GB_10D("eSIM-JP1G-10", 10200),
     JP_MAX_3D("eSIM-JPMAX-03", 12000),
-    JP_MAX_5D("eSIM-JPMAX-05", 17000),
+    JP_MAX_5D("eSIM-JPMAX-05", 17500),
     JP_MAX_7D("eSIM-JPMAX-07", 22500),
     JP_MAX_10D("eSIM-JPMAX-10", 30000),
     SKT_3D("SKT-eSIM-03D", 18000),
