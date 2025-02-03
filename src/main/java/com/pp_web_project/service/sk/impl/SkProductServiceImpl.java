@@ -4,9 +4,11 @@ import com.pp_web_project.domain.SkProductDetalis;
 import com.pp_web_project.repository.SkProductDatailsRepository;
 import com.pp_web_project.service.sk.interfaces.SkProductService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -15,22 +17,28 @@ public class SkProductServiceImpl implements SkProductService {
     private final SkProductDatailsRepository skProductDatailsRepository;
 
     @Override
-    public Page<SkProductDetalis> findByOrderNum(String orderNum, Pageable pageable) {
-        return skProductDatailsRepository.findByOrderNum(orderNum, pageable);
+    public List<SkProductDetalis> findByOrderNum(String orderNum) {
+        return skProductDatailsRepository.findByOrderNum(orderNum);
     }
 
     @Override
-    public Page<SkProductDetalis> findByRomingPhoneNum(String romingPhoneNum, Pageable pageable) {
-        return skProductDatailsRepository.findByRomingPhoneNum(romingPhoneNum, pageable);
+    public List<SkProductDetalis> findByRomingPhoneNum(String romingPhoneNum) {
+        return skProductDatailsRepository.findByRomingPhoneNum(romingPhoneNum);
     }
 
     @Override
-    public Page<SkProductDetalis> findByRentalMgmtNum(String rentalMgmtNum, Pageable pageable) {
-        return skProductDatailsRepository.findByRentalMgmtNum(rentalMgmtNum, pageable);
+    public List<SkProductDetalis> findByRentalMgmtNum(String rentalMgmtNum) {
+        return skProductDatailsRepository.findByRentalMgmtNum(rentalMgmtNum);
     }
 
     @Override
-    public Page<SkProductDetalis> findBySkProductAll(Pageable pageable) {
-        return skProductDatailsRepository.findByAll(pageable);
+    public List<SkProductDetalis> findBySkProductAll(LocalDate startDate, LocalDate endDate) {
+        return skProductDatailsRepository.findBySellDateBetween(startDate, endDate);
+    }
+
+    @Transactional
+    @Override
+    public int updateIsCodeOneStatusByIds(List<Long> ids, boolean status) {
+        return skProductDatailsRepository.updateIsCodeOneStatusByIds(ids, status);
     }
 }

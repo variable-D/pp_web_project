@@ -379,7 +379,7 @@ public class ExcelExportUtil {
 
         // ✅ 1. 엑셀 헤더 생성
         Row headerRow = sheet.createRow(0);
-        String[] headers = {"번호", "주무 번호", "서비스 번호", "MGMT 번호", "수량", "Lpa"};
+        String[] headers = {"번호", "주문 번호", "서비스 번호", "MGMT 번호", "수량", "코드원", "날짜", "Lpa"};
 
         CellStyle headerStyle = getHeaderCellStyle(workbook);
         for (int i = 0; i < headers.length; i++) {
@@ -405,7 +405,9 @@ public class ExcelExportUtil {
             row.createCell(2).setCellValue(data.getRomingPhoneNum());
             row.createCell(3).setCellValue(data.getRentalMgmtNum());
             row.createCell(4).setCellValue(data.getTotalCnt());
-            row.createCell(5).setCellValue(data.getEsimMappingId());
+            row.createCell(5).setCellValue(data.getIsCodeOne() ? "O" : "X");
+            row.createCell(6).setCellValue(data.getSellDate().toString());
+            row.createCell(7).setCellValue(data.getEsimMappingId());
 
             no++;
 
@@ -424,7 +426,7 @@ public class ExcelExportUtil {
         }
 
         // ✅ 3. 열 너비 최적화
-        int[] columnWidths = {3000, 5000, 5000, 5000, 3000, 15000};
+        int[] columnWidths = {3000, 5000, 5000, 5000, 3000, 3000, 5000, 15000};
         for (int i = 0; i < headers.length; i++) {
             sheet.setColumnWidth(i, columnWidths[i]);
         }

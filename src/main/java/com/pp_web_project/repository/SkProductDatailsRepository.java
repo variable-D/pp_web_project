@@ -4,23 +4,27 @@ import com.pp_web_project.domain.SkProductDetalis;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.util.List;
 
 
 public interface SkProductDatailsRepository extends JpaRepository<SkProductDetalis, Long> {
-    // ✅ 최신 데이터부터 정렬하여 조회 (최근 50개)
-    @Query("SELECT s FROM SkProductDetalis s WHERE s.orderNum = :orderNum ORDER BY s.id DESC")
-    Page<SkProductDetalis> findByOrderNum(@Param("orderNum") String orderNum, Pageable pageable);
+    List<SkProductDetalis> findByOrderNum(String orderNum);
+    List<SkProductDetalis> findByRomingPhoneNum(String romingPhoneNum);
+    List<SkProductDetalis> findByRentalMgmtNum(String rentalMgmtNum);
+    @Query("SELECT s FROM SkProductDetalis s WHERE s.sellDate >= :startDate AND s.sellDate < :endDate ORDER BY s.id DESC")
+    List<SkProductDetalis> findBySellDateBetween(@Param("startDate") LocalDate startDate,
+                                                 @Param("endDate") LocalDate endDate);
 
-    // ✅ 최신 데이터부터 정렬하여 조회 (최근 50개)
-    @Query("SELECT s FROM SkProductDetalis s WHERE s.romingPhoneNum = :romingPhoneNum ORDER BY s.id DESC")
-    Page<SkProductDetalis> findByRomingPhoneNum(@Param("romingPhoneNum") String romingPhoneNum, Pageable pageable);
 
-    // ✅ 최신 데이터부터 정렬하여 조회 (최근 50개)
-    @Query("SELECT s FROM SkProductDetalis s WHERE s.rentalMgmtNum = :rentalMgmtNum ORDER BY s.id DESC")
-    Page<SkProductDetalis> findByRentalMgmtNum(@Param("rentalMgmtNum") String rentalMgmtNum, Pageable pageable);
+    @Transactional
+    @Modifying
+    @Query("UPDATE SkProductDetalis sk SET sk.isCodeOne = :status WHERE sk.id IN :ids")
+    int updateIsCodeOneStatusByIds(@Param("ids") List<Long> ids, @Param("status") boolean status);
 
-    @Query("SELECT s FROM SkProductDetalis s ORDER BY s.id DESC")
-    Page<SkProductDetalis> findByAll(Pageable pageable);
 }

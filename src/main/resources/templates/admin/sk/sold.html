@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>JOYTEL </title>
+    <title>SK 상품 </title>
     <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
     <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 
@@ -203,6 +203,100 @@
         .table tbody tr:hover {
             background: rgba(255, 255, 255, 0.1);
         }
+        /* ✅ 테이블 헤더 (버튼 포함) */
+        .table-header {
+            display: flex;
+            justify-content: space-between; /* 좌우 정렬 */
+            align-items: center;
+            width: 100%;
+            max-width: 1000px;
+            padding: 10px 0;
+        }
+
+
+        .table-container {
+            width: 100%;
+            max-width: 800px;
+            margin-top: 20px;
+            background: rgba(50, 50, 50, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            padding: 15px;
+            overflow-x: auto;
+        }
+
+        .table {
+            color: white;
+            text-align: center;
+            width: 100%;
+        }
+
+        .table th, .table td {
+            padding: 12px;
+            font-size: 16px;
+        }
+
+        .table thead {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* 기본 체크박스 숨김 */
+        input[type="checkbox"] {
+            display: none;
+        }
+
+        /* 체크박스 스타일 */
+        .custom-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #EAEAEA;
+            border-radius: 4px;
+            display: inline-block;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+        }
+
+        /* 체크박스 내부 체크된 상태 */
+        input[type="checkbox"]:checked + .custom-checkbox {
+            background-color: #FF3B3B;
+            border-color: #FF3B3B;
+        }
+
+        /* 체크되었을 때 체크 아이콘 */
+        input[type="checkbox"]:checked + .custom-checkbox::after {
+            content: "✔";
+            font-size: 14px;
+            color: white;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-weight: bold;
+        }
+
+        /* 체크박스 hover 효과 */
+        .custom-checkbox:hover {
+            border-color: #FFD700;
+        }
+
+        /* 전체 선택 체크박스 스타일 */
+        #selectAll + .custom-checkbox {
+            width: 22px;
+            height: 22px;
+        }
+
+        /* 전체 선택 체크박스가 선택되었을 때 */
+        #selectAll:checked + .custom-checkbox {
+            background-color: #FF3B3B;
+            border-color: #FF3B3B;
+        }
+
+
         /* ✅ 태블릿 (1024px 이하) */
         @media (max-width: 1024px) {
             .search-form {
@@ -221,6 +315,11 @@
                 gap: 10px;
                 width: 100%;
             }
+            .table-header {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
         }
 
         /* ✅ 모바일 (768px 이하) */
@@ -233,6 +332,12 @@
                 max-width: 100%;
                 overflow-x: auto;
                 padding: 15px;
+            }
+            .table-header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                gap: 5px;
             }
             .btn-container {
                 flex-direction: column;
@@ -282,17 +387,19 @@
                 height: 40px;
                 font-size: 14px;
             }
+            .custom-checkbox {
+                width: 18px;
+                height: 18px;
+            }
+            .table-header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
         }
-
     </style>
 
     <script>
-        function navigateToPage() {
-            var selectedPage = document.getElementById("categorySelect").value;
-            if (selectedPage) {
-                window.location.href = selectedPage;
-            }
-        }
 
         function copyRowData(element) {
             let row = element.closest("tr");
@@ -305,6 +412,73 @@
                 console.error("복사 실패:", err);
             });
         }
+
+        // ✅ 개별 체크박스 클릭 시 전체 선택 체크박스 상태 업데이트
+        document.addEventListener("DOMContentLoaded", function () {
+            let checkboxes = document.querySelectorAll('.rowCheckbox');
+            let selectAllCheckbox = document.getElementById("selectAll");
+
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener("change", function () {
+                    selectAllCheckbox.checked = [...checkboxes].every(cb => cb.checked);
+                });
+            });
+        });
+
+        async function submitUpdateForm(status) {
+            const selectedCheckboxes = document.querySelectorAll('.rowCheckbox:checked');
+            if (selectedCheckboxes.length === 0) {
+                alert("✅ 업데이트할 항목을 선택하세요!");
+                return;
+            }
+
+            const ids = Array.from(selectedCheckboxes).map(cb => cb.value).join(","); // ✅ 콤마(,)로 연결된 문자열
+
+            try {
+                const response = await fetch(`/admin/sk/products/sold/update?ids=${ids}&status=${status}`, {
+                    method: 'PATCH'
+                });
+
+                const result = await response.text();
+                alert(result);
+
+                if (response.ok) {
+                    // ✅ 상태가 변경되면 UI 업데이트 (✅ 추가/제거)
+                    ids.split(",").map(id => id.trim()).forEach(id => {
+                        let checkbox = document.getElementById("checkbox-" + id);
+                        let row = checkbox.closest("tr");
+                        let codeOneCell = row.querySelector("td:nth-child(7)"); // 7번째 열 (코드원 상태)
+
+                        if (status) {
+                            // ✅ 코드원 활성화 → ✅ 아이콘 추가 (중복 방지)
+                            if (!codeOneCell.querySelector(".codeOneIcon")) {
+                                codeOneCell.innerHTML += `<span class="codeOneIcon" style="color: #FFD700; font-weight: bold; text-shadow: 0px 0px 5px rgba(255, 255, 102, 0.8);">✅</span>`;
+                            }
+                        } else {
+                            // 🚫 코드원 비활성화 → ✅ 아이콘 삭제
+                            let icon = codeOneCell.querySelector(".codeOneIcon");
+                            if (icon) {
+                                icon.remove();
+                            }
+                        }
+                    });
+
+                    alert(`✅ 코드원 상태가 ${status ? "활성화" : "비활성화"}되었습니다.`);
+
+                    // ✅ 1초 후 페이지 자동 새로고침
+                    setTimeout(() => {
+                        location.reload();
+                    }, 100);
+
+                } else {
+                    alert("🚨 상태 업데이트 실패!");
+                }
+            } catch (error) {
+                console.error("🚨 업데이트 요청 중 오류 발생:", error);
+                alert("🚨 서버 오류가 발생했습니다!");
+            }
+        }
+
     </script>
 </head>
 <body>
@@ -322,7 +496,7 @@
 <div class="search-form">
     <form action="/admin/sk/products/sold" method="get">
         <div>
-            <label for="orderNumSelect" class="text-white">주문 번호</label>
+            <label for="orderNumSelect" class="text-white">주문 번호</label><br/>
             <input type="text" id="orderNumSelect" name="orderNumber" placeholder="주문 번호 입력">
         </div>
         <div>
@@ -333,6 +507,14 @@
             <label for="mgmtNumSelect" class="text-white">MGMT 번호</label>
             <input type="text" id="mgmtNumSelect" name="mgmtNumber" placeholder="MGMT 번호 입력">
         </div>
+        <div>
+            <label for="startDate" class="text-white">조회 시작일</label>
+            <input type="date" id="startDate" name="startDate">
+        </div>
+        <div>
+            <label for="endDate" class="text-white">조회 종료일</label>
+            <input type="date" id="endDate" name="endDate">
+        </div>
         <div class="btn-container">
             <button type="submit" class="search-btn">조회</button>
         </div>
@@ -342,7 +524,10 @@
 <div class="summary-container">
     <form action="/admin/sk/products/sold/download" method="get">
         <input type="hidden" name="orderNumber" th:value="${orderNumber}">
-        <input type="hidden" name="products" th:value="${products}">
+        <input type="hidden" name="serviceNumber" th:value="${serviceNumber}">
+        <input type="hidden" name="mgmtNumber" th:value="${mgmtNumber}">
+        <input type="hidden" name="startDate" th:value="${startDate}">
+        <input type="hidden" name="endDate" th:value="${endDate}">
         <button type="submit" class="download-btn">📥 엑셀 다운로드</button>
     </form>
 
@@ -352,15 +537,23 @@
 </div>
 
 <div class="table-container">
+    <!-- ✅ 테이블 상단 버튼 -->
+    <div class="table-header">
+        <button type="button" class="search-btn" onclick="submitUpdateForm(true)">📌 코드원 활성화</button>
+        <button type="button" class="search-btn" onclick="submitUpdateForm(false)">🚫 코드원 비활성화</button>
+    </div>
+
     <table class="table table-dark table-striped">
         <thead>
         <tr>
             <th>번호</th>
-            <th>주문 번호</th>
+            <th>주문번호</th>
             <th>서비스 번호</th>
             <th>MGMT 번호</th>
             <th>수량</th>
-            <th>Lpa</th>
+            <th>날짜</th>
+            <th>코드원</th>
+            <th>LPA</th>
         </tr>
         </thead>
         <tbody>
@@ -370,11 +563,20 @@
             <td th:text="${data.getRomingPhoneNum()}"></td>
             <td th:text="${data.getRentalMgmtNum()}"></td>
             <td th:text="${data.getTotalCnt()}"></td>
+            <td th:text="${data.getSellDate()}"></td>
+            <td>
+                <input type="checkbox" name="selectedIds" th:value="${data.id}" class="rowCheckbox" th:id="${'checkbox-' + data.id}">
+                <label th:for="${'checkbox-' + data.id}" class="custom-checkbox"></label>
+                <span th:if="${data.isCodeOne}" class="codeOneIcon" style="color: #FFD700; font-weight: bold; text-shadow: 0px 0px 5px rgba(255, 255, 102, 0.8);">✅</span>
+            </td>
+
+
             <td th:text="${data.getEsimMappingId()}"></td>
         </tr>
         </tbody>
     </table>
 </div>
+
 
 </body>
 </html>

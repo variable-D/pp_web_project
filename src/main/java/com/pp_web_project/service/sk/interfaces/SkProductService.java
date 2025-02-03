@@ -1,12 +1,23 @@
 package com.pp_web_project.service.sk.interfaces;
 
 import com.pp_web_project.domain.SkProductDetalis;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import java.time.LocalDate;
+import java.util.List;
 
 public interface SkProductService {
-    Page<SkProductDetalis> findByOrderNum(String orderNum, Pageable pageable);
-    Page<SkProductDetalis> findByRomingPhoneNum(String romingPhoneNum, Pageable pageable);
-    Page<SkProductDetalis> findByRentalMgmtNum(String rentalMgmtNum, Pageable pageable);
-    Page<SkProductDetalis> findBySkProductAll(Pageable pageable);
+
+    // ✅ 주문번호로 검색
+    List<SkProductDetalis> findByOrderNum(String orderNum);
+
+    // ✅ 서비스 번호로 검색
+    List<SkProductDetalis> findByRomingPhoneNum(String romingPhoneNum);
+
+    // ✅ MGMT 번호로 검색
+    List<SkProductDetalis> findByRentalMgmtNum(String rentalMgmtNum);
+
+    // ✅ 특정 기간 내 전체 데이터 조회
+    List<SkProductDetalis> findBySkProductAll(LocalDate startDate, LocalDate endDate);
+
+    // ✅ 코드원 상태 변경 (true/false 가능)
+    int updateIsCodeOneStatusByIds(List<Long> ids, boolean status);
 }

@@ -421,7 +421,7 @@
             const ids = Array.from(selectedCheckboxes).map(cb => parseInt(cb.value));
 
             try {
-                const response = await fetch('/admin/joytel/products/update', {
+                const response = await fetch('/admin/joytel/products/expiring/update', {
                     method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json'
@@ -518,7 +518,7 @@
                 <input type="checkbox" name="selectedIds" th:value="${data.id}" class="rowCheckbox" th:id="${'checkbox-' + data.id}">
                 <label th:for="${'checkbox-' + data.id}" class="custom-checkbox"></label>
             </td>
-            <td th:text="${stat.count}"></td>
+            <td><a href="#" th:text="${stat.count}" onclick="copyRowData(this)" style="cursor: pointer; text-decoration: none; color: #FFD700;"></a></td>
             <td th:text="${data.productCode}"></td>
             <td th:text="${data.days}"></td>
             <td th:text="${data.inputDate}"></td>

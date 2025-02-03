@@ -250,7 +250,7 @@ public class JoytelController {
         return "admin/joytel/expiring";
     }
 
-    @PatchMapping("/update")
+    @PatchMapping("/expiring/update")
     public ResponseEntity<Map<String, Object>> updateRefundStatus(@RequestBody List<Long> ids) {
         Map<String, Object> response = new HashMap<>();
 

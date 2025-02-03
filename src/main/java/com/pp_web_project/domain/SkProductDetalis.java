@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 
 @Entity
 @Getter
@@ -41,4 +43,10 @@ public class SkProductDetalis {
 
     @Column(name = "roming_num")
     private String romingNum;
+
+    @Column(name = "sell_date", insertable = false, updatable = false)
+    private LocalDate sellDate;
+
+    @Column(name = "is_code_one", nullable = false)
+    private Boolean isCodeOne = false;
 }

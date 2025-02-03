@@ -45,10 +45,14 @@
         /* ✅ 입력 필드 스타일 */
         .form-control {
             background: rgba(20, 20, 20, 0.9);
-            color: #FFFFFF !important;
-            border: 1px solid #777;
             border-radius: 8px;
+            color: #EAEAEA !important; /* 🔥 강제 텍스트 색상 적용 */
+            border: 1px solid #555 !important;
+            outline: none;
             transition: all 0.3s ease-in-out;
+            -webkit-appearance: none !important;
+            -moz-appearance: none !important;
+            appearance: none !important;
         }
 
         /* ✅ 플레이스홀더 색상 */
@@ -225,12 +229,12 @@
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
 
         <div class="mb-3">
-            <label for="userId" class="form-label" style="color: #FFFFFF;">아이디</label>
+            <label for="userId" class="form-label" style="color: #FFFFFF;"></label>
             <input type="text" id="userId" name="userId" class="form-control" placeholder="아이디 입력" required>
         </div>
 
         <div class="mb-3">
-            <label for="password" class="form-label" style="color: #FFFFFF;">비밀번호</label>
+            <label for="password" class="form-label" style="color: #FFFFFF;"></label>
             <input type="password" id="password" name="password" class="form-control" placeholder="비밀번호 입력" required>
         </div>
 

@@ -1,24 +1,16 @@
 package com.pp_web_project.controller;
 
-import com.pp_web_project.domain.JoytelProduct;
 import com.pp_web_project.domain.SkProductDetalis;
 import com.pp_web_project.service.sk.interfaces.SkProductService;
 import com.pp_web_project.util.ExcelExportUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
+import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
@@ -38,63 +30,80 @@ public class SkController {
             @RequestParam(value = "orderNumber", required = false) String orderNumber,
             @RequestParam(value = "serviceNumber", required = false) String serviceNumber,
             @RequestParam(value = "mgmtNumber", required = false) String mgmtNumber,
+            @RequestParam(value = "startDate", required = false) LocalDate startDate,
+            @RequestParam(value = "endDate", required = false) LocalDate endDate,
             Model model
     ) {
-
-        String logo = "eSIM";
-
-        List<SkProductDetalis> soldItems = null;
-        Page<SkProductDetalis> soldItemsPage = null;
-        Pageable pageable = PageRequest.of(0, 50, Sort.by("id").descending());
-
-        if(orderNumber != null && !orderNumber.isEmpty()) {
-            soldItemsPage = skProductService.findByOrderNum(orderNumber, pageable);
-            soldItems = soldItemsPage.getContent();
-        } else if(serviceNumber != null && !serviceNumber.isEmpty()) {
-            soldItemsPage = skProductService.findByRomingPhoneNum(serviceNumber, pageable);
-            soldItems = soldItemsPage.getContent();
-        } else if(mgmtNumber != null && !mgmtNumber.isEmpty()) {
-            soldItemsPage = skProductService.findByRentalMgmtNum(mgmtNumber, pageable);
-            soldItems = soldItemsPage.getContent();
-        }else{
-            soldItemsPage = skProductService.findBySkProductAll(pageable);
-            soldItems = soldItemsPage.getContent();
+        // ✅ 기본값: 오늘 00:00 ~ 23:59 조회
+        if (startDate == null) {
+            startDate = LocalDate.now(); // 기본: 오늘 날짜
+        }
+        if (endDate == null) {
+            endDate = LocalDate.now(); // 기본: 오늘 날짜
         }
 
+        // ✅ JPA에서 `endDate`의 23:59:59까지 포함되도록 +1일 적용
+        LocalDate adjustedEndDate = endDate.plusDays(1);
 
+        String logo = "eSIM";
+        List<SkProductDetalis> soldItems = null;
+
+        if (orderNumber != null && !orderNumber.isEmpty()) {
+            soldItems = skProductService.findByOrderNum(orderNumber);
+        } else if (serviceNumber != null && !serviceNumber.isEmpty()) {
+            soldItems = skProductService.findByRomingPhoneNum(serviceNumber);
+        } else if (mgmtNumber != null && !mgmtNumber.isEmpty()) {
+            soldItems = skProductService.findByRentalMgmtNum(mgmtNumber);
+        } else {
+            // ✅ `LocalDate` 그대로 사용, JPA에서 23:59까지 포함
+            soldItems = skProductService.findBySkProductAll(startDate, adjustedEndDate);
+        }
+
+        model.addAttribute("startDate", startDate);
+        model.addAttribute("endDate", endDate);
         model.addAttribute("logo", logo);
         model.addAttribute("soldItems", soldItems);
         model.addAttribute("orderNumber", orderNumber);
         model.addAttribute("serviceNumber", serviceNumber);
         model.addAttribute("mgmtNumber", mgmtNumber);
+
         return "admin/sk/sold";
     }
+
 
     @GetMapping("/sold/download")
     public ResponseEntity<byte[]> adminDownloadSoldSkItemExcel(
             @RequestParam(value = "orderNumber", required = false) String orderNumber,
             @RequestParam(value = "serviceNumber", required = false) String serviceNumber,
-            @RequestParam(value = "mgmtNumber", required = false) String mgmtNumber) {
+            @RequestParam(value = "mgmtNumber", required = false) String mgmtNumber,
+            @RequestParam(value = "startDate", required = false) LocalDate startDate,
+            @RequestParam(value = "endDate", required = false) LocalDate endDate) {
 
         try {
 
-            List<SkProductDetalis> soldItems = null;
-            Page<SkProductDetalis> soldItemsPage = null;
-            Pageable pageable = PageRequest.of(0, 50, Sort.by("id").descending());
-
-            if(orderNumber != null && !orderNumber.isEmpty()) {
-                soldItemsPage = skProductService.findByOrderNum(orderNumber, pageable);
-                soldItems = soldItemsPage.getContent();
-            } else if(serviceNumber != null && !serviceNumber.isEmpty()) {
-                soldItemsPage = skProductService.findByRomingPhoneNum(serviceNumber, pageable);
-                soldItems = soldItemsPage.getContent();
-            } else if(mgmtNumber != null && !mgmtNumber.isEmpty()) {
-                soldItemsPage = skProductService.findByRentalMgmtNum(mgmtNumber, pageable);
-                soldItems = soldItemsPage.getContent();
-            }else{
-                soldItemsPage = skProductService.findBySkProductAll(pageable);
-                soldItems = soldItemsPage.getContent();
+            // ✅ 기본값: 오늘 00:00 ~ 23:59 조회
+            if (startDate == null) {
+                startDate = LocalDate.now(); // 기본: 오늘 날짜
             }
+            if (endDate == null) {
+                endDate = LocalDate.now(); // 기본: 오늘 날짜
+            }
+
+            // ✅ JPA에서 `endDate`의 23:59:59까지 포함되도록 +1일 적용
+            LocalDate adjustedEndDate = endDate.plusDays(1);
+            List<SkProductDetalis> soldItems = null;
+
+            if (orderNumber != null && !orderNumber.isEmpty()) {
+                soldItems = skProductService.findByOrderNum(orderNumber);
+            } else if (serviceNumber != null && !serviceNumber.isEmpty()) {
+                soldItems = skProductService.findByRomingPhoneNum(serviceNumber);
+            } else if (mgmtNumber != null && !mgmtNumber.isEmpty()) {
+                soldItems = skProductService.findByRentalMgmtNum(mgmtNumber);
+            } else {
+                // ✅ `LocalDate` 그대로 사용, JPA에서 23:59까지 포함
+                soldItems = skProductService.findBySkProductAll(startDate, adjustedEndDate);
+            }
+
             // Excel 데이터 생성
             byte[] excelData = ExcelExportUtil.exportSoldSkItemsToExcel(soldItems);
 
@@ -123,4 +132,15 @@ public class SkController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+
+    @PatchMapping("/sold/update")
+    public ResponseEntity<String> updateCodeOneStatus(
+            @RequestParam(name = "ids") List<Long> ids,
+            @RequestParam(name = "status") boolean status) {
+
+        int updatedCount = skProductService.updateIsCodeOneStatusByIds(ids, status);
+        return ResponseEntity.ok("✅ " + updatedCount + "개의 코드원이 " + (status ? "활성화" : "비활성화") + "되었습니다.");
+    }
+
+
 }

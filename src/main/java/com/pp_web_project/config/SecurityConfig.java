@@ -62,7 +62,8 @@ public class SecurityConfig {
                 // ✅ CSRF 예외 처리 추가
                 .csrf(csrf -> csrf.ignoringRequestMatchers(
                         "/login",  // 로그인 요청
-                        "/admin/joytel/products/update"  // PATCH 요청을 허용할 엔드포인트
+                        "/admin/joytel/products/expiring/update",  // PATCH 요청을 허용할 엔드포인트
+                        "/admin/sk/products/sold/update"  // GET 요청을 허용할 엔드포인트
                 ));
 
 
