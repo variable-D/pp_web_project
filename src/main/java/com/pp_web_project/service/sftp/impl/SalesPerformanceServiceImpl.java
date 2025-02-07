@@ -37,4 +37,10 @@ public class SalesPerformanceServiceImpl implements SalesPerformanceService {
     public List<SftpData> getFindByTransactionDateBetween(LocalDateTime startDate, LocalDateTime endDate) {
         return sftpDataRepository.findByTransactionDateBetween(startDate, endDate);
     }
+
+
+    @Override
+    public List<SftpData> getSalesByTransactionType(String transactionType, LocalDateTime startDate, LocalDateTime endDate) {
+        return sftpDataRepository.findByTransactionTypeAndDateRange(transactionType, startDate, endDate);
+    }
 }

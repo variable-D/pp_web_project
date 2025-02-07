@@ -10,5 +10,6 @@ public interface SalesPerformanceService {
     List<SftpData> getSalesByBarcode(String barcode, LocalDateTime startDate, LocalDateTime endDate);
     List<SftpData> getSalesByStoreNumberAndBarcode(String storeNumber, String barcode, LocalDateTime startDate, LocalDateTime endDate);
     List<SftpData> getFindByTransactionDateBetween(LocalDateTime startDate, LocalDateTime endDate);
+    List<SftpData> getSalesByTransactionType(String transactionType, LocalDateTime startDate, LocalDateTime endDate);
 }
 

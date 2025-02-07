@@ -5,6 +5,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProductBoundUtil {
     public String getInboundOrOutbound(String product) {
-        return ProductAndInBoundOrOutBoundEunm.getInboundOrOutbound(product);
+        return ProductAndInBoundOrOutBoundEnum.getInboundOrOutbound(product);
     }
 }

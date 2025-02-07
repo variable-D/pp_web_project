@@ -32,9 +32,9 @@ public class SalesPerformanceController {
     public String adminSalesPerformance(
             @RequestParam(value = "store", required = false) String storeNumber,
             @RequestParam(value = "barcode", required = false) String barcode,
-
-            @RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
-            @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
+            @RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam(value = "transactionType", required = false) String transactionType,
             Model model) {
 
 
@@ -49,15 +49,20 @@ public class SalesPerformanceController {
 
         // 1) 날짜 기본값 처리
         if (startDate == null) {
-            startDate = LocalDate.now().minusDays(1).atStartOfDay();
+            startDate = LocalDate.now().minusDays(1);
         }
         if (endDate == null) {
-            endDate = LocalDateTime.now();
+            endDate = LocalDate.now();
         }
+
+        // LocalDate를 LocalDateTime으로 변환하여 시간 설정
+        LocalDateTime startDateTime = startDate.atStartOfDay(); // 00:00:00
+        LocalDateTime endDateTime = endDate.atTime(23, 59, 59); // 23:59:59
 
         // 2) 조건 체크를 위한 boolean 변수
         boolean hasStore = storeNumber != null && !storeNumber.isEmpty();
         boolean hasBarcode = barcode != null && !barcode.isEmpty();
+        boolean hasTransactionType = transactionType != null && !transactionType.isEmpty();
 
         log.info("🕒 [조회 시작] 엑셀: {}, barcode: {}, startDate: {}, endDate: {}", storeNumber, barcode, startDate, endDate);
 
@@ -65,16 +70,19 @@ public class SalesPerformanceController {
         List<SftpData> salesData;
         if (hasStore && hasBarcode) {
             // ✅ 점포번호 + 바코드 조회
-            salesData = salesPerformanceService.getSalesByStoreNumberAndBarcode(storeNumber, barcode, startDate, endDate);
+            salesData = salesPerformanceService.getSalesByStoreNumberAndBarcode(storeNumber, barcode, startDateTime, endDateTime);
         } else if (hasStore) {
             // ✅ 점포번호만
-            salesData = salesPerformanceService.getSalesByStoreNumber(storeNumber, startDate, endDate);
+            salesData = salesPerformanceService.getSalesByStoreNumber(storeNumber, startDateTime, endDateTime);
         } else if (hasBarcode) {
             // ✅ 바코드만
-            salesData = salesPerformanceService.getSalesByBarcode(barcode, startDate, endDate);
+            salesData = salesPerformanceService.getSalesByBarcode(barcode, startDateTime, endDateTime);
+        }else if (hasTransactionType) {
+            // ✅ 거래 유형만
+            salesData = salesPerformanceService.getSalesByTransactionType(transactionType, startDateTime, endDateTime);
         } else {
             // ✅ 둘 다 없으면 전체 조회
-            salesData = salesPerformanceService.getFindByTransactionDateBetween(startDate, endDate);
+            salesData = salesPerformanceService.getFindByTransactionDateBetween(startDateTime, endDateTime);
         }
 
 
@@ -88,6 +96,17 @@ public class SalesPerformanceController {
         BigDecimal totalAmount = salesData.stream()
                 .map(sale -> new BigDecimal(sale.getTransactionAmount()))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        long inboundCount = salesData.stream()
+                .filter(data -> "02".equals(data.getTransactionType()))
+                .count();
+
+        long outboundCount = salesData.stream()
+                .filter(data -> "01".equals(data.getTransactionType()))
+                .count();
+
+        model.addAttribute("inboundCount", inboundCount);
+        model.addAttribute("outboundCount", outboundCount);
         model.addAttribute("categoryList", categoryList);
         model.addAttribute("title", title);
         model.addAttribute("logo", logo);
@@ -107,41 +126,48 @@ public class SalesPerformanceController {
     public ResponseEntity<byte[]> adminDownloadSalesReport(
             @RequestParam(value = "store", required = false) String storeNumber,
             @RequestParam(value = "barcode", required = false) String barcode,
-            @RequestParam(value = "startDate", required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
-            @RequestParam(value = "endDate", required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
+            @RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam(value = "transactionType", required = false) String transactionType) {
 
 
         try {
 
             // 1) 날짜 기본값 처리
             if (startDate == null) {
-                startDate = LocalDate.now().minusDays(1).atStartOfDay();
+                startDate = LocalDate.now().minusDays(1);
             }
             if (endDate == null) {
-                endDate = LocalDateTime.now();
+                endDate = LocalDate.now();
             }
+
+            // LocalDate를 LocalDateTime으로 변환하여 시간 설정
+            LocalDateTime startDateTime = startDate.atStartOfDay(); // 00:00:00
+            LocalDateTime endDateTime = endDate.atTime(23, 59, 59); // 23:59:59
 
             // 2) 조건 체크를 위한 boolean 변수
             boolean hasStore = storeNumber != null && !storeNumber.isEmpty();
             boolean hasBarcode = barcode != null && !barcode.isEmpty();
+            boolean hasTransactionType = transactionType != null && !transactionType.isEmpty();
 
 
             // 3) DB 조회
             List<SftpData> salesData;
             if (hasStore && hasBarcode) {
                 // ✅ 점포번호 + 바코드 조회
-                salesData = salesPerformanceService.getSalesByStoreNumberAndBarcode(storeNumber, barcode, startDate, endDate);
+                salesData = salesPerformanceService.getSalesByStoreNumberAndBarcode(storeNumber, barcode, startDateTime, endDateTime);
             } else if (hasStore) {
                 // ✅ 점포번호만
-                salesData = salesPerformanceService.getSalesByStoreNumber(storeNumber, startDate, endDate);
+                salesData = salesPerformanceService.getSalesByStoreNumber(storeNumber, startDateTime, endDateTime);
             } else if (hasBarcode) {
                 // ✅ 바코드만
-                salesData = salesPerformanceService.getSalesByBarcode(barcode, startDate, endDate);
+                salesData = salesPerformanceService.getSalesByBarcode(barcode, startDateTime, endDateTime);
+            }else if (hasTransactionType) {
+                // ✅ 거래 유형만
+                salesData = salesPerformanceService.getSalesByTransactionType(transactionType, startDateTime, endDateTime);
             } else {
                 // ✅ 둘 다 없으면 전체 조회
-                salesData = salesPerformanceService.getFindByTransactionDateBetween(startDate, endDate);
+                salesData = salesPerformanceService.getFindByTransactionDateBetween(startDateTime, endDateTime);
             }
 
 
@@ -178,8 +204,9 @@ public class SalesPerformanceController {
             @RequestParam(value = "store", required = false) String storeNumber,
             @RequestParam(value = "barcode", required = false) String barcode,
 
-            @RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
-            @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
+            @RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam(value = "transactionType", required = false) String transactionType,
             Model model) {
 
 
@@ -190,34 +217,43 @@ public class SalesPerformanceController {
         categoryList.put("정산 기준", "/user/sales/performance");
         categoryList.put("판매 기준", "/user/sales/retail");
 
+
+
         // 1) 날짜 기본값 처리
         if (startDate == null) {
-            startDate = LocalDate.now().minusDays(1).atStartOfDay();
+            startDate = LocalDate.now().minusDays(1);
         }
         if (endDate == null) {
-            endDate = LocalDateTime.now();
+            endDate = LocalDate.now();
         }
+
+        // LocalDate를 LocalDateTime으로 변환하여 시간 설정
+        LocalDateTime startDateTime = startDate.atStartOfDay(); // 00:00:00
+        LocalDateTime endDateTime = endDate.atTime(23, 59, 59); // 23:59:59
 
         // 2) 조건 체크를 위한 boolean 변수
         boolean hasStore = storeNumber != null && !storeNumber.isEmpty();
         boolean hasBarcode = barcode != null && !barcode.isEmpty();
+        boolean hasTransactionType = transactionType != null && !transactionType.isEmpty();
 
         log.info("🕒 [조회 시작] 엑셀: {}, barcode: {}, startDate: {}, endDate: {}", storeNumber, barcode, startDate, endDate);
 
-        // 3) DB 조회
         List<SftpData> salesData;
         if (hasStore && hasBarcode) {
             // ✅ 점포번호 + 바코드 조회
-            salesData = salesPerformanceService.getSalesByStoreNumberAndBarcode(storeNumber, barcode, startDate, endDate);
+            salesData = salesPerformanceService.getSalesByStoreNumberAndBarcode(storeNumber, barcode, startDateTime, endDateTime);
         } else if (hasStore) {
             // ✅ 점포번호만
-            salesData = salesPerformanceService.getSalesByStoreNumber(storeNumber, startDate, endDate);
+            salesData = salesPerformanceService.getSalesByStoreNumber(storeNumber, startDateTime, endDateTime);
         } else if (hasBarcode) {
             // ✅ 바코드만
-            salesData = salesPerformanceService.getSalesByBarcode(barcode, startDate, endDate);
+            salesData = salesPerformanceService.getSalesByBarcode(barcode, startDateTime, endDateTime);
+        }else if (hasTransactionType) {
+            // ✅ 거래 유형만
+            salesData = salesPerformanceService.getSalesByTransactionType(transactionType, startDateTime, endDateTime);
         } else {
             // ✅ 둘 다 없으면 전체 조회
-            salesData = salesPerformanceService.getFindByTransactionDateBetween(startDate, endDate);
+            salesData = salesPerformanceService.getFindByTransactionDateBetween(startDateTime, endDateTime);
         }
 
 
@@ -231,6 +267,16 @@ public class SalesPerformanceController {
         BigDecimal totalAmount = salesData.stream()
                 .map(sale -> new BigDecimal(sale.getTransactionAmount()))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+        long inboundCount = salesData.stream()
+                .filter(data -> "02".equals(data.getTransactionType()))
+                .count();
+
+        long outboundCount = salesData.stream()
+                .filter(data -> "01".equals(data.getTransactionType()))
+                .count();
+
+        model.addAttribute("inboundCount", inboundCount);
+        model.addAttribute("outboundCount", outboundCount);
         model.addAttribute("categoryList", categoryList);
         model.addAttribute("title", title);
         model.addAttribute("logo", logo);
@@ -252,36 +298,47 @@ public class SalesPerformanceController {
     public ResponseEntity<byte[]> userDownloadSalesReport(
             @RequestParam(value = "store", required = false) String storeNumber,
             @RequestParam(value = "barcode", required = false) String barcode,
-            @RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
-            @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
+            @RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam(value = "transactionType", required = false) String transactionType) {
+
 
         try {
+
             // 1) 날짜 기본값 처리
             if (startDate == null) {
-                startDate = LocalDate.now().minusDays(1).atStartOfDay();
+                startDate = LocalDate.now().minusDays(1);
             }
             if (endDate == null) {
-                endDate = LocalDateTime.now();
+                endDate = LocalDate.now();
             }
+
+            // LocalDate를 LocalDateTime으로 변환하여 시간 설정
+            LocalDateTime startDateTime = startDate.atStartOfDay(); // 00:00:00
+            LocalDateTime endDateTime = endDate.atTime(23, 59, 59); // 23:59:59
 
             // 2) 조건 체크를 위한 boolean 변수
             boolean hasStore = storeNumber != null && !storeNumber.isEmpty();
             boolean hasBarcode = barcode != null && !barcode.isEmpty();
+            boolean hasTransactionType = transactionType != null && !transactionType.isEmpty();
 
             // 3) DB 조회
             List<SftpData> salesData;
             if (hasStore && hasBarcode) {
                 // ✅ 점포번호 + 바코드 조회
-                salesData = salesPerformanceService.getSalesByStoreNumberAndBarcode(storeNumber, barcode, startDate, endDate);
+                salesData = salesPerformanceService.getSalesByStoreNumberAndBarcode(storeNumber, barcode, startDateTime, endDateTime);
             } else if (hasStore) {
                 // ✅ 점포번호만
-                salesData = salesPerformanceService.getSalesByStoreNumber(storeNumber, startDate, endDate);
+                salesData = salesPerformanceService.getSalesByStoreNumber(storeNumber, startDateTime, endDateTime);
             } else if (hasBarcode) {
                 // ✅ 바코드만
-                salesData = salesPerformanceService.getSalesByBarcode(barcode, startDate, endDate);
+                salesData = salesPerformanceService.getSalesByBarcode(barcode, startDateTime, endDateTime);
+            }else if (hasTransactionType) {
+                // ✅ 거래 유형만
+                salesData = salesPerformanceService.getSalesByTransactionType(transactionType, startDateTime, endDateTime);
             } else {
                 // ✅ 둘 다 없으면 전체 조회
-                salesData = salesPerformanceService.getFindByTransactionDateBetween(startDate, endDate);
+                salesData = salesPerformanceService.getFindByTransactionDateBetween(startDateTime, endDateTime);
             }
 
 

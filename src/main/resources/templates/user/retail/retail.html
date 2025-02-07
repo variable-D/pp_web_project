@@ -495,6 +495,14 @@
             <td><span th:text="${salesData != null ? #lists.size(salesData) : 0}"></span> 건</td>
         </tr>
         <tr>
+            <td>총 인바운드 건수:</td>
+            <td><span th:text="${inboundCount}"></span> 건</td>
+        </tr>
+        <tr>
+            <td>총 아웃바운드 건수:</td>
+            <td><span th:text="${outboundCount}"></span> 건</td>
+        </tr>
+        <tr>
             <td>총 금액:</td>
             <td><span th:text="${#numbers.formatInteger(totalAmount, 1, 'COMMA')}"></span> 원</td>
         </tr>
@@ -530,7 +538,10 @@
                 </a>
             </td>
             <td th:text="${data.manageNo.trim()}"></td>
-            <td th:text="${productInBoundOrOutBound.getInboundOrOutbound(data.plunm.trim())}"></td>
+            <td>
+                <span th:if="${productInBoundOrOutBound.getInboundOrOutbound(data.plunm.trim()) == 'OUT'}" class="text-primary">OUT</span>
+                <span th:if="${productInBoundOrOutBound.getInboundOrOutbound(data.plunm.trim()) == 'IN'}" class="text-success">IN</span>
+            </td>
             <td th:text="${data.storeNo.trim()}"></td>
             <td th:text="${data.saleDate.trim()}"></td>
             <td th:text="${data.saleTime.trim()}"></td>

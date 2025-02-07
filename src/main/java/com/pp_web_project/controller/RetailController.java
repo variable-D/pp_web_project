@@ -31,6 +31,7 @@ public class RetailController {
     private final ProductNameUtil productNameUtil;
     private final ProductAmountUtil productAmountUtil;
     private final ProductPlusSpaceUtil productPlusSpaceUtil;
+    private final ProductAndInBoundOrOutBoundEnumUtil productAndInBoundOrOutBoundEnumUtil;
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd");
 
@@ -94,8 +95,20 @@ public class RetailController {
                     .sum();
         }
 
+        int inboundCount = 0;
+        int outboundCount = 0;
 
-
+        if (salesData != null) {
+            for (TcpResponseData data : salesData) {
+                String productCode = data.getPlunm().trim();
+                String boundType = ProductAndInBoundOrOutBoundEnum.getInboundOrOutbound(productCode);
+                if ("IN".equals(boundType)) {
+                    inboundCount++;
+                } else if ("OUT".equals(boundType)) {
+                    outboundCount++;
+                }
+            }
+        }
 
         String logo = "eSIM";
         List<ProductAndNameEnum> productNameList = Arrays.asList(ProductAndNameEnum.values());
@@ -114,6 +127,9 @@ public class RetailController {
         model.addAttribute("productNameUtil",productNameUtil);
         model.addAttribute("productAmountUtil",productAmountUtil);
         model.addAttribute("totalAmount", totalAmount);
+        model.addAttribute("inboundCount", inboundCount);
+        model.addAttribute("outboundCount", outboundCount);
+
 
 
         return "admin/retail/retail";
@@ -256,6 +272,20 @@ public class RetailController {
                     .sum();
         }
 
+        int inboundCount = 0;
+        int outboundCount = 0;
+
+        if (salesData != null) {
+            for (TcpResponseData data : salesData) {
+                String productCode = data.getPlunm().trim();
+                String boundType = ProductAndInBoundOrOutBoundEnum.getInboundOrOutbound(productCode);
+                if ("IN".equals(boundType)) {
+                    inboundCount++;
+                } else if ("OUT".equals(boundType)) {
+                    outboundCount++;
+                }
+            }
+        }
 
 
 
@@ -276,6 +306,8 @@ public class RetailController {
         model.addAttribute("productNameUtil",productNameUtil);
         model.addAttribute("productAmountUtil",productAmountUtil);
         model.addAttribute("totalAmount", totalAmount);
+        model.addAttribute("inboundCount", inboundCount);
+        model.addAttribute("outboundCount", outboundCount);
 
 
         return "user/retail/retail";

@@ -372,14 +372,15 @@
 </div>
 
 <!-- 🔍 검색 폼 -->
+
 <div class="search-form">
     <form action="/user/sales/performance" method="get">
         <div class="row">
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <label for="storeSelect" class="text-white">가맹점 번호</label>
                 <input type="text" id="storeSelect" name="store" placeholder="점포 번호 입력">
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <label for="barcodeSelect" class="text-white">상품</label>
                 <select id="barcodeSelect" name="barcode" class="form-select">
                     <option value="">-- 상품 선택 --</option>
@@ -389,15 +390,22 @@
                     </option>
                 </select>
             </div>
+            <div class="col-md-2">
+                <label for="transactionType" class="text-white">거래 구분</label>
+                <select id="transactionType" name="transactionType" class="form-select">
+                    <option value="">거래 구분 선택</option>
+                    <option value="01">아웃바운드</option>
+                    <option value="02">인바운드</option>
+                </select>
+            </div>
             <div class="col-md-3">
                 <label for="startDate" class="text-white">조회 시작일</label>
-                <input type="datetime-local" id="startDate" name="startDate">
+                <input type="date" id="startDate" name="startDate">
             </div>
             <div class="col-md-3">
                 <label for="endDate" class="text-white">조회 종료일</label>
-                <input type="datetime-local" id="endDate" name="endDate">
+                <input type="date" id="endDate" name="endDate">
             </div>
-
         </div>
         <div class="row mt-3">
             <div class="col text-center">
@@ -427,6 +435,15 @@
             <td>총 조회 건수:</td>
             <td><span th:text="${salesData != null ? #lists.size(salesData) : 0}"></span> 건</td>
         </tr>
+        <tr>
+            <td>총 인바운드 건수:</td>
+            <td><span th:text="${inboundCount}"></span> 건</td>
+        </tr>
+        <tr>
+            <td>총 아웃바운드 건수:</td>
+            <td><span th:text="${outboundCount}"></span> 건</td>
+        </tr>
+
         <tr>
             <td>총 금액:</td>
             <td><span th:text="${#numbers.formatInteger(totalAmount, 1, 'COMMA')}"></span> 원</td>
@@ -467,8 +484,8 @@
             <!-- ✅ 날짜 포맷 변경 -->
             <td th:text="${#temporals.format(data.transactionDate, 'yyyy-MM-dd HH:mm:ss')}"></td>
             <td>
-                <span th:if="${data.transactionType == '01'}" class="text-primary">아웃바운드</span>
-                <span th:if="${data.transactionType == '02'}" class="text-success">인바운드</span>
+                <span th:if="${data.transactionType == '01'}" class="text-primary">OUT</span>
+                <span th:if="${data.transactionType == '02'}" class="text-success">IN</span>
                 <span th:unless="${data.transactionType == '01' or data.transactionType == '02'}"
                       th:text="${data.transactionType}"></span>
             </td>
