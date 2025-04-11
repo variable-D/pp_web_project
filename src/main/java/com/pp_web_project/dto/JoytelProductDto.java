@@ -17,4 +17,6 @@ public class JoytelProductDto {
     private Boolean refund;
     private String coupon;
     private String transId;
+    private String orderNum = "0";
+    private String nation;
 }

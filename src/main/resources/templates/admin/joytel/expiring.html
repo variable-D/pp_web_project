@@ -508,6 +508,7 @@
             <th>리딤 날짜</th>
             <th>유효 기간</th>
             <th>Lpa</th>
+            <th>국가</th>
             <th>쿠폰</th>
             <th>트랜스 아이디</th>
         </tr>
@@ -524,6 +525,7 @@
             <td th:text="${data.inputDate}"></td>
             <td th:text="${data.validity}"></td>
             <td th:text="${data.lpa}"></td>
+            <td th:text="${data.getNation()}"></td>
             <td th:text="${data.coupon}"></td>
             <td th:text="${data.transId}"></td>
         </tr>

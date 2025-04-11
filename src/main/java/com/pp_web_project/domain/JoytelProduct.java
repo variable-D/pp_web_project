@@ -48,4 +48,7 @@ public class JoytelProduct {
     @Column(name = "order_num")
     private String orderNum = "0";
 
+    @Column(name = "nation")
+    private String nation;
+
 }

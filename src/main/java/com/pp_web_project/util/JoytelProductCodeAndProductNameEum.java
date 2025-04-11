@@ -13,7 +13,14 @@ public enum JoytelProductCodeAndProductNameEum {
     JP_MAX_3D("eSIM-JPMAX-03", "일본 MAX 3일"),
     JP_MAX_5D("eSIM-JPMAX-05", "일본 MAX 5일"),
     JP_MAX_7D("eSIM-JPMAX-07", "일본 MAX 7일"),
-    JP_MAX_10D("eSIM-JPMAX-10", "일본 MAX 10일");
+    JP_MAX_10D("eSIM-JPMAX-10", "일본 MAX 10일"),
+    KR_MAX_3D("eSIM-KRMAX-03", "한국 MAX 3일"),
+    KR_MAX_5D("eSIM-KRMAX-05", "한국 MAX 5일"),
+    KR_MAX_7D("eSIM-KRMAX-07", "한국 MAX 7일"),
+    KR_MAX_10D("eSIM-KRMAX-10", "한국 MAX 10일"),
+    KR_MAX_15D("eSIM-KRMAX-15", "한국 MAX 15일"),
+    KR_MAX_20D("eSIM-KRMAX-20", "한국 MAX 20일");
+
 
     private final String product;
     private final String productName;

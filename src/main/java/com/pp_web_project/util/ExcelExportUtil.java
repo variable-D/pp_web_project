@@ -177,7 +177,7 @@ public class ExcelExportUtil {
 
         // ✅ 1. 엑셀 헤더 생성
         Row headerRow = sheet.createRow(0);
-        String[] headers = {"번호", "상품명", "일자", "리딤 날짜", "유효 기간", "Lpa", "쿠폰", "트랜스 아이디"};
+        String[] headers = {"번호", "상품명", "일자", "리딤 날짜", "유효 기간", "Lpa", "국가", "쿠폰", "트랜스 아이디"};
 
         CellStyle headerStyle = getHeaderCellStyle(workbook);
         for (int i = 0; i < headers.length; i++) {
