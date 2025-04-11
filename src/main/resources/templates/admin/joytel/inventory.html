@@ -335,6 +335,12 @@
                     th:value="${joytelProductName.product}"
                     th:text="${joytelProductName.productName}"></option>
         </select>
+        <label for="nationSelect" class="text-white">국가</label>
+        <select id="nationSelect" name="nation" class="form-select">
+            <option value="">-- 국가 선택 --</option>
+            <option value="한국">한국</option>
+            <option value="일본">일본</option>
+        </select>
         <div class="btn-container">
             <button type="submit" class="search-btn">조회</button>
         </div>

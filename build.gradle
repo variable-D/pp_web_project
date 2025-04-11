@@ -49,3 +49,8 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+tasks.named('bootJar') {
+    archiveFileName = 'pp_web.jar'
+    // 여기에 jar 파일 이름 설정, prod/dev 파일명 변경하면서 application.yml 파일 또한 변경할것
+}

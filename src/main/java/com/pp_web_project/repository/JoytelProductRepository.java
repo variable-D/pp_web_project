@@ -16,9 +16,13 @@ public interface JoytelProductRepository extends JpaRepository<JoytelProduct, Lo
     List<JoytelProduct> findBySellFalseAndRefundFalse();
     Page<JoytelProduct> findByProductCodeAndSellTrueAndRefundFalseOrderByIdDesc(String products, Pageable pageable);
 
+    List<JoytelProduct> findByNationAndSellFalseAndRefundFalse(String nation);
+
     List<JoytelProduct> findByProductCodeAndOrderNumAndSellTrueAndRefundFalse(String products, String orderNum);
+
     List<JoytelProduct> findByOrderNumAndSellTrueAndRefundFalse(String orderNum);
     Page<JoytelProduct> findBySellTrueAndRefundFalseOrderByIdDesc(Pageable pageable);
+    Page<JoytelProduct> findByNationAndSellTrueAndRefundFalse(String nation, Pageable pageable);
 
     @Query("SELECT p FROM JoytelProduct p WHERE p.productCode = :productCode AND p.sell = false AND p.refund = false AND DATEDIFF(CURRENT_DATE, p.inputDate) >= 20")
     List<JoytelProduct> findExpiredUnsoldProducts(@Param("productCode") String productCode);
@@ -26,9 +30,14 @@ public interface JoytelProductRepository extends JpaRepository<JoytelProduct, Lo
     @Query("SELECT p FROM JoytelProduct p WHERE p.sell = false AND p.refund = false AND DATEDIFF(CURRENT_DATE, p.inputDate) >= 20")
     List<JoytelProduct> findAllExpiredUnsoldProducts();
 
+    @Query("SELECT p FROM JoytelProduct p WHERE p.nation = :nation AND p.sell = false AND p.refund = false AND DATEDIFF(CURRENT_DATE, p.inputDate) >= 20")
+    List<JoytelProduct> findExpiredUnsoldNation(@Param("nation") String nation);
+
     @Transactional
     @Modifying
     @Query("UPDATE JoytelProduct jp SET jp.refund = true WHERE jp.id IN :ids")
     int updateRefundStatusByIds(@Param("ids") List<Long> ids);
+
+
 
 }

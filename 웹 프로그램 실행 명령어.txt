@@ -1,0 +1,2 @@
+웹 프로그램 실행 우분투 명령어.
+cd /home/prepia/app/ && nohup java -jar pp_web.jar >> web.log 2>&1 &

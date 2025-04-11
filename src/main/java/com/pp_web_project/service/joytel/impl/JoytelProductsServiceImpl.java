@@ -58,8 +58,22 @@ public class JoytelProductsServiceImpl implements JoytelProductsService {
     }
 
     @Override
+    public List<JoytelProduct> getExpiredUnsoldNation(String nation) {
+        return joytelProductRepository.findExpiredUnsoldNation(nation);
+    }
+
+    @Override
     public int updateRefundStatusByIds(List<Long> ids) {
         return joytelProductRepository.updateRefundStatusByIds(ids);
     }
 
+    @Override
+    public List<JoytelProduct> getNationAndSellFalseAndRefundFalse(String nation) {
+        return joytelProductRepository.findByNationAndSellFalseAndRefundFalse(nation);
+    }
+
+    @Override
+    public Page<JoytelProduct> getNationAndSellTrueAndRefundFalse(String nation, Pageable pageable) {
+        return joytelProductRepository.findByNationAndSellTrueAndRefundFalse(nation, pageable);
+    }
 }

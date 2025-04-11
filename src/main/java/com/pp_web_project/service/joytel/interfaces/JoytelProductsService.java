@@ -19,4 +19,9 @@ public interface JoytelProductsService {
     // ✅ 모든 데이터 중에서 20일 이상 지난 데이터 조회
     List<JoytelProduct> getAllExpiredUnsoldProducts();
     int updateRefundStatusByIds(List<Long> ids);
+
+    List<JoytelProduct> getNationAndSellFalseAndRefundFalse(String nation);
+    Page<JoytelProduct> getNationAndSellTrueAndRefundFalse(String nation, Pageable pageable);
+
+    List<JoytelProduct> getExpiredUnsoldNation(String nation);
 }

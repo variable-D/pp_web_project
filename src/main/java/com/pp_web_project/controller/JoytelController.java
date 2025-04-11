@@ -37,6 +37,7 @@ public class JoytelController {
     @GetMapping("/inventory")
     public String inventory(
             @RequestParam(value = "product", required = false) String products,
+            @RequestParam(value = "nation", required = false) String nation,
             Model model
     ) {
 
@@ -52,6 +53,8 @@ public class JoytelController {
 
         if (products != null && !products.isEmpty()) {
             inventory = joytelProductsService.getProducts(products);
+        } else if (nation != null && !nation.isEmpty()) {
+            inventory = joytelProductsService.getNationAndSellFalseAndRefundFalse(nation);
         } else {
             inventory = joytelProductsService.getInventory();
         }
@@ -72,18 +75,21 @@ public class JoytelController {
 
     @GetMapping("/inventory/download")
     public ResponseEntity<byte[]> adminDownloadExcel(
-            @RequestParam(value = "product", required = false) String products) {
+            @RequestParam(value = "product", required = false) String products,
+            @RequestParam(value = "nation", required = false) String nation) {
 
         try {
             log.info("products: {}", products);
 
             List<JoytelProduct> inventory = null;
+
             if (products != null && !products.isEmpty()) {
                 inventory = joytelProductsService.getProducts(products);
+            } else if (nation != null && !nation.isEmpty()) {
+                inventory = joytelProductsService.getNationAndSellFalseAndRefundFalse(nation);
             } else {
                 inventory = joytelProductsService.getInventory();
             }
-
 
             // Excel 데이터 생성
             byte[] excelData = ExcelExportUtil.exportJoytelInventoryListExcel(inventory, joytelProductCodeAndProductNameUtil);
@@ -118,6 +124,7 @@ public class JoytelController {
     public String sold(
             @RequestParam(value = "product", required = false) String products,
             @RequestParam(value = "orderNumber", required = false) String orderNumber,
+            @RequestParam(value = "nation", required = false) String nation,
             Model model
     ) {
         String logo = "eSIM";
@@ -138,6 +145,9 @@ public class JoytelController {
             soldItems = joytelProductsService.getSoldAndOrderNum(orderNumber);
         } else if (products != null && !products.isEmpty()) {
             item = joytelProductsService.getSoldAndProductCode(pageable, products);
+            soldItems = item.getContent();
+        } else if (nation != null && !nation.isEmpty()) {
+            item = joytelProductsService.getNationAndSellTrueAndRefundFalse(nation, pageable);
             soldItems = item.getContent();
         } else {
             item = joytelProductsService.getSoldProductsPage(pageable);
@@ -162,7 +172,8 @@ public class JoytelController {
     @GetMapping("/sold/download")
     public ResponseEntity<byte[]> adminDownloadSoldItemExcel(
             @RequestParam(value = "product", required = false) String products
-            , @RequestParam(value = "orderNumber", required = false) String orderNumber) {
+            , @RequestParam(value = "orderNumber", required = false) String orderNumber,
+            @RequestParam(value = "nation", required = false) String nation) {
 
         try {
             log.info("products: {}", products);
@@ -173,12 +184,16 @@ public class JoytelController {
 
             Pageable pageable = PageRequest.of(0, 50, Sort.by("id").descending());
 
+
             if (products != null && !products.isEmpty() && orderNumber != null && !orderNumber.isEmpty()) {
                 soldItems = joytelProductsService.getSoldAndProductCodeAndOrderNum(products, orderNumber);
             } else if (orderNumber != null && !orderNumber.isEmpty()) {
                 soldItems = joytelProductsService.getSoldAndOrderNum(orderNumber);
             } else if (products != null && !products.isEmpty()) {
                 item = joytelProductsService.getSoldAndProductCode(pageable, products);
+                soldItems = item.getContent();
+            } else if (nation != null && !nation.isEmpty()) {
+                item = joytelProductsService.getNationAndSellTrueAndRefundFalse(nation, pageable);
                 soldItems = item.getContent();
             } else {
                 item = joytelProductsService.getSoldProductsPage(pageable);
@@ -217,6 +232,7 @@ public class JoytelController {
     @GetMapping("/expiring")
     public String expiring(
             @RequestParam(value = "product", required = false) String products,
+            @RequestParam(value = "nation", required = false) String nation,
             Model model
     ) {
 
@@ -232,7 +248,10 @@ public class JoytelController {
 
         if (products != null && !products.isEmpty()) {
             refundItems = joytelProductsService.getExpiredUnsoldProducts(products);
-        } else {
+        } else if (nation != null && !nation.isEmpty()) {
+            refundItems = joytelProductsService.getExpiredUnsoldNation(nation);
+        }
+        else {
             refundItems = joytelProductsService.getAllExpiredUnsoldProducts();
         }
 
@@ -277,7 +296,8 @@ public class JoytelController {
 
     @GetMapping("/expiring/download")
     public ResponseEntity<byte[]> adminDownloadRefundItemsExcel(
-            @RequestParam(value = "product", required = false) String products) {
+            @RequestParam(value = "product", required = false) String products,
+            @RequestParam(value = "nation", required = false) String nation) {
 
         try {
             log.info("products: {}", products);
@@ -287,7 +307,10 @@ public class JoytelController {
 
             if (products != null && !products.isEmpty()) {
                 refundItems = joytelProductsService.getExpiredUnsoldProducts(products);
-            } else {
+            } else if (nation != null && !nation.isEmpty()) {
+                refundItems = joytelProductsService.getExpiredUnsoldNation(nation);
+            }
+            else {
                 refundItems = joytelProductsService.getAllExpiredUnsoldProducts();
             }
 
