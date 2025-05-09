@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SK eSIM 상품 상세조회 </title>
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #1C1C1C, #2E2E2E);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #EAEAEA;
+            font-family: 'Arial', sans-serif;
+            padding-top: 20px;
+        }
+
+        h2 {
+            color: #EAEAEA;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        /* ✅ 로고 설정 */
+        .logo-container {
+            position: relative;
+            top: -10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .logo {
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: bold;
+            color: #EAEAEA;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .logo a {
+            text-decoration: none;
+            color: inherit;
+            font-weight: bold;
+        }
+
+        .search-form {
+            width: 100%;
+            max-width: 800px;
+            padding: 20px;
+            background: rgba(50, 50, 50, 0.8);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        /* ✅ 모든 입력 필드와 셀렉트 박스 동일 크기 */
+        input, select {
+            width: 100%;
+            max-width: 250px;
+            height: 40px;
+            padding: 10px;
+            font-size: 16px;
+            background: rgba(20, 20, 20, 0.9);
+            color: #EAEAEA;
+            border: 1px solid #555;
+            border-radius: 8px;
+            outline: none;
+            transition: all 0.3s ease-in-out;
+            appearance: none;
+        }
+
+        /* ✅ 모든 환경에서 동일한 select 스타일 */
+        select {
+            width: 100%;
+            max-width: 250px;
+            height: 40px;
+            padding: 10px;
+            font-size: 16px;
+            background-color: rgba(20, 20, 20, 0.9) !important; /* 🔥 강제 배경색 적용 */
+            color: #EAEAEA !important; /* 🔥 강제 텍스트 색상 적용 */
+            border: 1px solid #555 !important;
+            border-radius: 8px;
+            outline: none;
+            transition: all 0.3s ease-in-out;
+            -webkit-appearance: none !important;
+            -moz-appearance: none !important;
+            appearance: none !important;
+            background-image: url("data:image/svg+xml;utf8,<svg fill='%23EAEAEA' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5H7z'/></svg>");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 16px;
+            padding-right: 30px;
+        }
+
+
+        .search-btn:hover {
+            background: linear-gradient(135deg, #5a6268, #343a40);
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(108, 117, 125, 0.5);
+        }
+
+        /* ✅ 아이폰 및 모바일에서도 강제 적용 */
+        select option {
+            background-color: rgba(20, 20, 20, 1) !important; /* 🔥 드롭다운 배경 강제 */
+            color: #EAEAEA !important; /* 🔥 드롭다운 텍스트 색상 강제 */
+        }
+
+        /* ✅ 구분 Select 박스를 오른쪽 정렬 */
+        .category-container {
+            width: 100%;
+            max-width: 1000px;
+            display: flex;
+            justify-content: flex-end; /* 기존 유지 */
+            margin-bottom: 10px;
+            padding-right: 101px; /* ➡️ 오른쪽 여백 확보 */
+        }
+
+        .category-container select {
+            width: 200px; /* 적절한 크기 지정 */
+        }
+
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .search-btn {
+            background: linear-gradient(135deg, #6c757d, #495057);
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            width: 100%;
+            max-width: 250px;
+        }
+
+        .search-btn:hover {
+            background: linear-gradient(135deg, #5a6268, #343a40);
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(108, 117, 125, 0.5);
+        }
+
+
+        .table-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            width: 100%;
+        }
+
+        table {
+            width: 100%;
+            max-width: 400px;
+            border-collapse: collapse;
+            background: rgba(40, 40, 40, 0.95);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(255,255,255,0.1);
+        }
+
+        th, td {
+            border: 1px solid #444;
+            padding: 10px;
+            font-size: 14px;
+        }
+
+        th {
+            background: rgba(70, 70, 70, 0.9);
+            font-weight: bold;
+            text-align: left;
+        }
+
+        td {
+            background: rgba(30, 30, 30, 0.9);
+        }
+
+        @media (max-width: 1280px) {
+            .search-form, .table-wrapper {
+                max-width: 95%;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .search-form, .category-container {
+                padding: 15px;
+            }
+            input, select, .search-btn {
+                font-size: 15px;
+            }
+            th, td {
+                font-size: 13px;
+                padding: 8px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .table-wrapper {
+                flex-direction: column;
+                align-items: center;
+            }
+            table {
+                width: 90%;
+            }
+            input, select {
+                font-size: 14px;
+                height: 42px;
+            }
+            .search-btn {
+                font-size: 15px;
+                height: 45px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h2 {
+                font-size: 18px;
+            }
+            .logo {
+                width: 60px;
+                height: 60px;
+                font-size: 14px;
+            }
+            input, select, .search-btn {
+                font-size: 13px;
+                padding: 8px;
+            }
+            th, td {
+                font-size: 12px;
+                padding: 6px;
+            }
+        }
+    </style>
+    <script>
+        function navigateToPage() {
+            var selectedPage = document.getElementById("categorySelect").value;
+            if (selectedPage) {
+                window.location.href = selectedPage;
+            }
+        }
+    </script>
+</head>
+<body>
+
+<div class="logo-container">
+    <div class="logo">
+        <a th:href="@{/admin}" th:text="${logo}"></a>
+    </div>
+</div>
+
+<h2>eSIM 상세정보</h2>
+<div class="category-container">
+    <label for="categorySelect" class="text-white"></label>
+    <select id="categorySelect" name="category" class="form-select" onchange="navigateToPage()">
+        <option value="">-- 구분 --</option>
+        <option th:each="entry : ${categoryList.entrySet()}"
+                th:value="${entry.value}"
+                th:text="${entry.key}">
+        </option>
+    </select>
+</div>
+<div class="search-form">
+    <form th:action="@{/admin/sk/products/eSIMDetails}" method="post">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+        <label for="mgmtNumber" class="text-white">MGMT 번호</label>
+        <input type="text" id="mgmtNumber" name="rental_mgmt_num" placeholder="MGMT 번호 입력" required>
+
+        <div class="btn-container">
+            <button type="submit" class="search-btn">🔍 상세 조회</button>
+        </div>
+    </form>
+</div>
+<br/>
+<div class="table-wrapper" th:if="${rentalData != null}">
+
+    <!-- 기본 정보 테이블 -->
+    <table>
+        <tr><th>시작예정일시</th><td th:text="${rentalData.rentalSchdStaDtm}"></td></tr>
+        <tr><th>추천인ID</th><td th:text="${rentalData.rcmndrId}"></td></tr>
+        <tr><th>EMAIL주소</th><td th:text="${rentalData.emailAddr}"></td></tr>
+        <tr><th>국내연락전화번호</th><td th:text="${rentalData.domCntcNum}"></td></tr>
+        <tr><th>종료예정일시</th><td th:text="${rentalData.rentalSchdEndDtm}"></td></tr>
+        <tr><th>렌탈영업조직ID</th><td th:text="${rentalData.rentalSaleOrgId}"></td></tr>
+        <tr><th>여권번호</th><td th:text="${rentalData.romingPassportNum}"></td></tr>
+        <tr><th>MGMT번호</th><td th:text="${rentalData.rentalMgmtNum}"></td></tr>
+        <tr><th>마스터정보총건수</th><td th:text="${rentalData.totalCnt}"></td></tr>
+        <tr><th>렌탈영업조직명칭</th><td th:text="${rentalData.rentalSaleOrgNm}"></td></tr>
+    </table>
+
+    <!-- 상세 리스트 테이블 반복 -->
+    <table th:each="item : ${rentalData.out1}" th:if="${rentalData.out1 != null}">
+        <tr><th>렌탈마스터번호</th><td th:text="${item.rentalMstNum}"></td></tr>
+        <tr><th>요금제명</th><td th:text="${item.rentalFeeProdNm}"></td></tr>
+        <tr><th>로밍유형코드</th><td th:text="${item.romingTypCd}"></td></tr>
+        <tr><th>예약바우처번호</th><td th:text="${item.rsvVouNum}"></td></tr>
+        <tr><th>요금제명</th>
+            <td th:text="${planMap[item.rentalFeeProdId] != null ? planMap[item.rentalFeeProdId] : item.rentalFeeProdNm}"></td>
+        </tr>
+        <tr><th>로밍전화번호</th><td th:text="${item.romingPhonNum}"></td></tr>
+        <tr><th>SIM 시작일자</th><td th:text="${#strings.isEmpty(item.useStaDtm) ? '설치 전' : item.useStaDtm}"></td></tr>
+        <tr><th>SIM 종료일자</th><td th:text="${#strings.isEmpty(item.useEndDtm) ? '설치 전' : item.useEndDtm}"></td></tr>
+        <tr><th>USIM일련번호</th><td th:text="${item.iccidNum}"></td></tr>
+    </table>
+</div>
+</body>
+</html>

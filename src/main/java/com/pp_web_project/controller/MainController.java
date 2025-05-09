@@ -53,6 +53,7 @@ public class MainController {
         menuList.add(Map.of("name", "Joytel 유효 기간 10일 이하 상품 목록", "url", "/admin/joytel/products/expiring")); // ✅ products 리소스 명시
         menuList.add(Map.of("name", "Joytel 판매 완료 상품 목록", "url", "/admin/joytel/products/sold")); // ✅ products 리소스 명시
         menuList.add(Map.of("name", "SK 판매 완료 상품 목록", "url", "/admin/sk/products/sold")); // ✅ products 리소스 명시
+        menuList.add(Map.of("name", "SK eSIM 상품 상세정보 조회", "url","/admin/sk/products/eSIMDetails")); // ✅ products 리소스 명시
 
         model.addAttribute("logo", logo);
         model.addAttribute("menuList", menuList);

@@ -1,6 +1,7 @@
 package com.pp_web_project.controller;
 
 import com.pp_web_project.domain.SkProductDetalis;
+import com.pp_web_project.dto.EsimResponseDto;
 import com.pp_web_project.service.sk.interfaces.SkProductService;
 import com.pp_web_project.util.ExcelExportUtil;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +16,10 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import com.pp_web_project.util.PlanNameMapper;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -59,6 +63,11 @@ public class SkController {
             soldItems = skProductService.findBySkProductAll(startDate, adjustedEndDate);
         }
 
+        Map<String, String> categoryList = new LinkedHashMap<>();
+        categoryList.put("판매된 상품", "/admin/sk/products/sold");
+        categoryList.put("상세 조회", "/admin/sk/products/eSIMDetails");
+
+        model.addAttribute("categoryList", categoryList);
         model.addAttribute("startDate", startDate);
         model.addAttribute("endDate", endDate);
         model.addAttribute("logo", logo);
@@ -143,4 +152,39 @@ public class SkController {
     }
 
 
+    @GetMapping("/eSIMDetails")
+    public String eSIMDetails(Model model) {
+        // eSIM 상세 페이지로 이동
+
+        Map<String, String> categoryList = new LinkedHashMap<>();
+        categoryList.put("판매된 상품", "/admin/sk/products/sold");
+        categoryList.put("상세 조회", "/admin/sk/products/eSIMDetails");
+
+        String logo = "eSIM";
+        model.addAttribute("categoryList", categoryList);
+        model.addAttribute("logo", logo);
+        return "admin/sk/eSIMDetails";
+    }
+
+    @PostMapping("/eSIMDetails")
+    public String eSIMDetails(@RequestParam("rental_mgmt_num") String rentalMgmtNum,
+                              Model model) {
+
+        // ✅ 1. SK API 호출 (서비스 계층)
+        EsimResponseDto rentalData = skProductService.fetchEsimDetailFromApi(rentalMgmtNum);
+
+        // ✅ 2. 카테고리 메뉴 구성
+        Map<String, String> categoryList = new LinkedHashMap<>();
+        categoryList.put("판매된 상품", "/admin/sk/products/sold");
+        categoryList.put("상세 조회", "/admin/sk/products/eSIMDetails");
+        String logo = "eSIM";
+        // ✅ 3. Model에 데이터 담기
+        model.addAttribute("categoryList", categoryList);
+        model.addAttribute("logo", logo);
+        model.addAttribute("rentalData", rentalData);
+        model.addAttribute("planMap", PlanNameMapper.PLAN_MAP); // ✅ 여기!
+
+        // ✅ 4. Thymeleaf 템플릿으로 이동
+        return "admin/sk/eSIMDetails";  // 👉 eSIM 상세 페이지 (POST 결과 포함)
+    }
 }

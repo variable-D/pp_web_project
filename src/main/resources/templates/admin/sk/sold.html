@@ -129,6 +129,19 @@
             color: #EAEAEA !important; /* 🔥 드롭다운 텍스트 색상 강제 */
         }
 
+        /* ✅ 구분 Select 박스를 오른쪽 정렬 */
+        .category-container {
+            width: 100%;
+            max-width: 1000px;
+            display: flex;
+            justify-content: flex-end; /* 기존 유지 */
+            margin-bottom: 10px;
+            padding-right: 101px; /* ➡️ 오른쪽 여백 확보 */
+        }
+
+        .category-container select {
+            width: 200px; /* 적절한 크기 지정 */
+        }
 
         .btn-container {
             display: flex;
@@ -400,6 +413,12 @@
     </style>
 
     <script>
+        function navigateToPage() {
+            var selectedPage = document.getElementById("categorySelect").value;
+            if (selectedPage) {
+                window.location.href = selectedPage;
+            }
+        }
 
         function copyRowData(element) {
             let row = element.closest("tr");
@@ -491,6 +510,17 @@
 </div>
 
 <h2>SK 판매 완료된 상품 </h2>
+
+<div class="category-container">
+    <label for="categorySelect" class="text-white"></label>
+    <select id="categorySelect" name="category" class="form-select" onchange="navigateToPage()">
+        <option value="">-- 구분 --</option>
+        <option th:each="entry : ${categoryList.entrySet()}"
+                th:value="${entry.value}"
+                th:text="${entry.key}">
+        </option>
+    </select>
+</div>
 
 
 <div class="search-form">

@@ -204,8 +204,9 @@ public class ExcelExportUtil {
             row.createCell(3).setCellValue(data.getInputDate());
             row.createCell(4).setCellValue(data.getValidity());
             row.createCell(5).setCellValue(data.getLpa());
-            row.createCell(6).setCellValue(data.getCoupon());
-            row.createCell(7).setCellValue(data.getTransId());
+            row.createCell(6).setCellValue(data.getNation() != null ? data.getNation() : "");
+            row.createCell(7).setCellValue(data.getCoupon());
+            row.createCell(8).setCellValue(data.getTransId());
             no++;
 
             // ✅ 스타일 적용 (홀수/짝수 행 색상 적용)
@@ -223,7 +224,7 @@ public class ExcelExportUtil {
         }
 
         // ✅ 3. 열 너비 최적화
-        int[] columnWidths = {3000, 4000, 4000, 5000, 4000, 15000, 6000, 9000};
+        int[] columnWidths = {3000, 4000, 4000, 5000, 4000, 15000,6000, 6000, 9000};
         for (int i = 0; i < headers.length; i++) {
             sheet.setColumnWidth(i, columnWidths[i]);
         }
@@ -244,7 +245,7 @@ public class ExcelExportUtil {
 
         // ✅ 1. 엑셀 헤더 생성
         Row headerRow = sheet.createRow(0);
-        String[] headers = {"번호","주문 번호", "상품명", "일자", "리딤 날짜", "유효 기간", "Lpa", "쿠폰", "트랜스 아이디"};
+        String[] headers = {"번호","주문 번호", "상품명", "일자", "리딤 날짜", "유효 기간", "Lpa", "국가", "쿠폰", "트랜스 아이디"};
 
         CellStyle headerStyle = getHeaderCellStyle(workbook);
         for (int i = 0; i < headers.length; i++) {
@@ -272,8 +273,9 @@ public class ExcelExportUtil {
             row.createCell(4).setCellValue(data.getInputDate());
             row.createCell(5).setCellValue(data.getValidity());
             row.createCell(6).setCellValue(data.getLpa());
-            row.createCell(7).setCellValue(data.getCoupon());
-            row.createCell(8).setCellValue(data.getTransId());
+            row.createCell(7).setCellValue(data.getNation() != null ? data.getNation() : "");
+            row.createCell(8).setCellValue(data.getCoupon());
+            row.createCell(9).setCellValue(data.getTransId());
             no++;
 
             // ✅ 스타일 적용 (홀수/짝수 행 색상 적용)
@@ -291,7 +293,7 @@ public class ExcelExportUtil {
         }
 
         // ✅ 3. 열 너비 최적화
-        int[] columnWidths = {3000, 5000, 4000, 4000, 5000, 4000, 15000, 6000, 9000};
+        int[] columnWidths = {3000, 5000, 4000, 4000, 5000, 4000, 15000,6000, 6000, 9000};
         for (int i = 0; i < headers.length; i++) {
             sheet.setColumnWidth(i, columnWidths[i]);
         }
@@ -312,7 +314,7 @@ public class ExcelExportUtil {
 
         // ✅ 1. 엑셀 헤더 생성
         Row headerRow = sheet.createRow(0);
-        String[] headers = {"번호", "상품명", "일자", "리딤 날짜", "유효 기간", "Lpa", "쿠폰", "트랜스 아이디"};
+        String[] headers = {"번호", "상품명", "일자", "리딤 날짜", "유효 기간", "Lpa","국가", "쿠폰", "트랜스 아이디"};
 
         CellStyle headerStyle = getHeaderCellStyle(workbook);
         for (int i = 0; i < headers.length; i++) {
@@ -339,8 +341,9 @@ public class ExcelExportUtil {
             row.createCell(3).setCellValue(data.getInputDate());
             row.createCell(4).setCellValue(data.getValidity());
             row.createCell(5).setCellValue(data.getLpa());
-            row.createCell(6).setCellValue(data.getCoupon());
-            row.createCell(7).setCellValue(data.getTransId());
+            row.createCell(6).setCellValue(data.getNation() != null ? data.getNation() : "");
+            row.createCell(7).setCellValue(data.getCoupon());
+            row.createCell(8).setCellValue(data.getTransId());
             no++;
 
             // ✅ 스타일 적용 (홀수/짝수 행 색상 적용)
@@ -358,7 +361,7 @@ public class ExcelExportUtil {
         }
 
         // ✅ 3. 열 너비 최적화
-        int[] columnWidths = {3000, 4000, 4000, 5000, 4000, 15000, 6000, 9000};
+        int[] columnWidths = {3000, 4000, 4000, 5000, 4000, 15000, 6000, 6000, 9000};
         for (int i = 0; i < headers.length; i++) {
             sheet.setColumnWidth(i, columnWidths[i]);
         }

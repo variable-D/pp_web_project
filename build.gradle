@@ -44,6 +44,7 @@ dependencies {
 
     // 압축 관련 의존성 (보안 업데이트)
     implementation 'org.apache.commons:commons-compress:1.24.0'
+
 }
 
 tasks.named('test') {

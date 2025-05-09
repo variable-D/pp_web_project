@@ -1,6 +1,8 @@
 package com.pp_web_project.service.sk.interfaces;
 
 import com.pp_web_project.domain.SkProductDetalis;
+import com.pp_web_project.dto.EsimResponseDto;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -20,4 +22,7 @@ public interface SkProductService {
 
     // ✅ 코드원 상태 변경 (true/false 가능)
     int updateIsCodeOneStatusByIds(List<Long> ids, boolean status);
+
+    EsimResponseDto fetchEsimDetailFromApi(String rentalMgmtNum);
+
 }
