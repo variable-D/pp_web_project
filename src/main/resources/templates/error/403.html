@@ -1,0 +1,95 @@
+<!-- src/main/resources/templates/error/500.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>403 Forbidden</title>
+
+    <!-- ✅ 내부 CSS (필요하면 외부 CSS 파일로 분리) -->
+    <style>
+        /* ===== 1) 공통 레이아웃 ===== */
+        :root {
+            --bg-dark-1: #1C1C1C;
+            --bg-dark-2: #2E2E2E;
+            --card-bg : rgba(50, 50, 50, .8);
+            --text-main: #EAEAEA;
+            --accent    : #FFFFFF33;
+        }
+        *,*::before,*::after{box-sizing:border-box}
+
+        body{
+            margin:0;
+            min-height:100vh;
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            justify-content:center;
+            font-family:'Arial',sans-serif;
+            color:var(--text-main);
+            background:linear-gradient(135deg,var(--bg-dark-1),var(--bg-dark-2));
+            padding:20px;
+        }
+
+
+        /* ===== 3) 카드 ===== */
+        .card{
+            width:90%;max-width:400px;margin-top:40px;padding:24px;
+            background:var(--card-bg);backdrop-filter:blur(10px);
+            border-radius:15px;text-align:center;
+            box-shadow:0 10px 30px rgba(0,0,0,.5);
+        }
+        .card h1{margin:0 0 10px;font-size:26px;letter-spacing:1px}
+        .card p {margin:4px 0;font-size:15px;line-height:1.5}
+
+        /* ✅ 버튼 스타일 */
+        .btn-link{
+            margin-top:20px;
+            padding:12px 20px;
+            font-size:16px;
+            font-weight:700;
+            color:#EAEAEA;
+            background:rgba(20,20,20,.9);
+            border:1px solid #555;
+            border-radius:8px;
+            cursor:pointer;
+            transition:all .3s ease-in-out;
+        }
+        .btn-link:hover{
+            background:rgba(30,30,30,1);
+            transform:scale(1.05);
+            box-shadow:0 0 10px #FFFFFF33;
+        }
+
+        @media (max-width: 768px) {            /* 태블릿 */
+            .card       { max-width: 320px; padding: 18px; }
+            .card h1    { font-size: 22px; }
+
+            /* ▶ 버튼 */
+            .btn-link   { font-size: 14px; padding: 10px 18px; }
+        }
+
+        @media (max-width: 480px) {            /* 모바일 */
+            .card       { max-width: 300px; padding: 15px; }
+            .card h1    { font-size: 20px; }
+
+            /* ▶ 버튼 */
+            .btn-link   { font-size: 13px; padding: 9px 16px; }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- ✅ 기본 메시지 카드 -->
+<div class="card">
+    <h1>접근 권한이 없습니다</h1>
+    <p>요청하신 페이지에 대한 권한이 없습니다.<br>
+        필요 시 관리자에게 문의해 주세요.</p>
+
+    <!-- ⏱️ Thymeleaf 오류 속성 (원하면 숨기거나 로그용으로만 표기) -->
+    <p th:if="${timestamp}" style="opacity:.6">
+        <small th:text="${#dates.format(timestamp, 'yyyy-MM-dd HH:mm:ss')}"></small>
+    </p>
+</div>
+</body>
+</html>

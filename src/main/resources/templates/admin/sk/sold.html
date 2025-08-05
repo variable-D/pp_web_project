@@ -423,10 +423,15 @@
         function copyRowData(element) {
             let row = element.closest("tr");
             let rowData = Array.from(row.children).slice(1).map(td => td.innerText.trim());
-            let textToCopy = rowData.join("\t");
+            let textToCopy =
+                `주문번호: ${rowData[0]}\n` +
+                `서비스 번호: ${rowData[1]}\n` +
+                `MGMT번호: ${rowData[2]}\n` +
+                `수량: ${rowData[3]}\n` +
+                `날짜: ${rowData[4]}`;
 
             navigator.clipboard.writeText(textToCopy).then(() => {
-                alert("📋 클립보드에 복사되었습니다!");
+                alert(textToCopy);
             }).catch(err => {
                 console.error("복사 실패:", err);
             });

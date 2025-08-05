@@ -403,11 +403,25 @@
                 }
             });
 
-            let textToCopy = rowData.join("\t"); // 탭 구분자로 합침 (엑셀 붙여넣기 가능)
+            let lpaValue = rowData[10].replace(/^LPA:/, '').trim();
+
+            let textToCopy =
+                `주문 번호: ${rowData[0].trim()}\n` +
+                `구분: ${rowData[1].trim()}\n` +
+                `가맹점 번호: ${rowData[2].trim()}\n` +
+                `거래 년월일: ${rowData[3].trim()}\n` +
+                `거래 일시: ${rowData[4].trim()}\n` +
+                `포스: ${rowData[5].trim()}\n` +
+                `전문 일련 번호: ${rowData[6].trim()}\n` +
+                `상품: ${rowData[7].trim()}\n` +
+                `유효 기간: ${rowData[8].trim()}\n` +
+                `승인 번호: ${rowData[9].trim()}\n` +
+                `LPA:${lpaValue}\n` +
+                `상품 금액: ${rowData[11].trim()}`;
 
             // 클립보드에 복사
             navigator.clipboard.writeText(textToCopy).then(() => {
-                alert("📋 클립보드에 복사되었습니다!");
+                alert(textToCopy);
             }).catch(err => {
                 console.error("복사 실패:", err);
             });

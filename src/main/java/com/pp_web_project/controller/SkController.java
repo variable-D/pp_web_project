@@ -2,15 +2,21 @@ package com.pp_web_project.controller;
 
 import com.pp_web_project.domain.SkProductDetalis;
 import com.pp_web_project.dto.EsimResponseDto;
+import com.pp_web_project.dto.RentalMgmtNumDto;
 import com.pp_web_project.service.sk.interfaces.SkProductService;
 import com.pp_web_project.util.ExcelExportUtil;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -18,6 +24,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import com.pp_web_project.util.PlanNameMapper;
 
@@ -29,6 +36,8 @@ public class SkController {
 
     private final SkProductService skProductService;
 
+    private final MessageSource messageSource;
+
     @GetMapping("/sold")
     public String sold(
             @RequestParam(value = "orderNumber", required = false) String orderNumber,
@@ -36,6 +45,7 @@ public class SkController {
             @RequestParam(value = "mgmtNumber", required = false) String mgmtNumber,
             @RequestParam(value = "startDate", required = false) LocalDate startDate,
             @RequestParam(value = "endDate", required = false) LocalDate endDate,
+            Locale locale,
             Model model
     ) {
         // ✅ 기본값: 오늘 00:00 ~ 23:59 조회
@@ -49,7 +59,7 @@ public class SkController {
         // ✅ JPA에서 `endDate`의 23:59:59까지 포함되도록 +1일 적용
         LocalDate adjustedEndDate = endDate.plusDays(1);
 
-        String logo = "eSIM";
+        String logo = messageSource.getMessage("messages.logo", null, locale);
         List<SkProductDetalis> soldItems = null;
 
         if (orderNumber != null && !orderNumber.isEmpty()) {
@@ -153,38 +163,54 @@ public class SkController {
 
 
     @GetMapping("/eSIMDetails")
-    public String eSIMDetails(Model model) {
+    public String eSIMDetails(Model model , Locale locale) {
         // eSIM 상세 페이지로 이동
 
         Map<String, String> categoryList = new LinkedHashMap<>();
-        categoryList.put("판매된 상품", "/admin/sk/products/sold");
         categoryList.put("상세 조회", "/admin/sk/products/eSIMDetails");
+        categoryList.put("판매된 상품", "/admin/sk/products/sold");
 
-        String logo = "eSIM";
+        String logo = messageSource.getMessage("messages.logo", null, locale);
         model.addAttribute("categoryList", categoryList);
         model.addAttribute("logo", logo);
         return "admin/sk/eSIMDetails";
     }
 
     @PostMapping("/eSIMDetails")
-    public String eSIMDetails(@RequestParam("rental_mgmt_num") String rentalMgmtNum,
-                              Model model) {
+    public String eSIMDetails(@Valid @ModelAttribute RentalMgmtNumDto rentalMgmtNumDto,
+                              BindingResult bindingResult,
+                              Model model, Locale locale) {
 
-        // ✅ 1. SK API 호출 (서비스 계층)
-        EsimResponseDto rentalData = skProductService.fetchEsimDetailFromApi(rentalMgmtNum);
-
-        // ✅ 2. 카테고리 메뉴 구성
         Map<String, String> categoryList = new LinkedHashMap<>();
-        categoryList.put("판매된 상품", "/admin/sk/products/sold");
         categoryList.put("상세 조회", "/admin/sk/products/eSIMDetails");
-        String logo = "eSIM";
-        // ✅ 3. Model에 데이터 담기
+        categoryList.put("판매된 상품", "/admin/sk/products/sold");
+        String logo = messageSource.getMessage("messages.logo", null, locale);
+
+        // 유효성 검사 실패 시
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("message", bindingResult.getFieldError().getDefaultMessage());
+            model.addAttribute("categoryList", categoryList);
+            model.addAttribute("logo", logo);
+
+            log.info("bindingResult: {}", bindingResult);
+            return "admin/sk/eSIMDetails";
+        }
+
+        // 실제 로직 처리
+        EsimResponseDto rentalData = skProductService.fetchEsimDetailFromApi(rentalMgmtNumDto.getRentalMgmtNum());
+
+        log.info("rentalData: {}", rentalData);
+
+        if (rentalData == null || rentalData.getRentalMgmtNum() == null || rentalData.getRentalMgmtNum().isEmpty()) {
+            String errorMessage = messageSource.getMessage("error.no.data", null, locale);
+            model.addAttribute("message", errorMessage);
+        }
+
         model.addAttribute("categoryList", categoryList);
         model.addAttribute("logo", logo);
         model.addAttribute("rentalData", rentalData);
-        model.addAttribute("planMap", PlanNameMapper.PLAN_MAP); // ✅ 여기!
+        model.addAttribute("planMap", PlanNameMapper.PLAN_MAP);
 
-        // ✅ 4. Thymeleaf 템플릿으로 이동
-        return "admin/sk/eSIMDetails";  // 👉 eSIM 상세 페이지 (POST 결과 포함)
+        return "admin/sk/eSIMDetails";
     }
 }

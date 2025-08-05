@@ -1,5 +1,7 @@
 package com.pp_web_project.controller;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.MessageSource;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -7,22 +9,22 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.security.core.Authentication;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Controller
+@RequiredArgsConstructor
 public class MainController {
 
+    private final MessageSource messageSource;
+
     @GetMapping("/admin")  // ✅ 관리자 메인 페이지
-    public String adminIndex(Model model) {
-        return getAdminPage(model);
+    public String adminIndex(Model model , Locale locale) {
+        return getAdminPage(model, locale);
     }
 
     @GetMapping("/user")  // ✅ 일반 사용자 메인 페이지
-    public String userIndex(Model model) {
-        return getUserPage(model);
+    public String userIndex(Model model , Locale locale) {
+        return getUserPage(model, locale);
     }
 
     @GetMapping("/")  // ✅ 루트 URL 처리
@@ -42,9 +44,9 @@ public class MainController {
         return new RedirectView("/login");  // ✅ 혹시라도 권한이 없으면 다시 로그인 페이지로
     }
 
-    private String getAdminPage(Model model) {
+    private String getAdminPage(Model model, Locale locale) {
         List<Map<String, String>> menuList = new ArrayList<>();
-        String logo = "eSIM";
+        String logo = messageSource.getMessage("messages.logo", null, locale);
 
         menuList.add(Map.of("name", "정산 실적 조회", "url", "/admin/sales/performance")); // ✅ `/sales/performance`로 구체화
         menuList.add(Map.of("name", "판매 실적 조회", "url", "/admin/sales/retail")); // ✅ `/sales/retail`로 명확하게 정리
@@ -60,9 +62,9 @@ public class MainController {
         return "admin/main/index";  // ✅ Spring Boot는 `templates/` 기준으로 찾음
     }
 
-    private String getUserPage(Model model) {
+    private String getUserPage(Model model, Locale locale) {
         List<Map<String, String>> menuList = new ArrayList<>();
-        String logo = "eSIM";
+        String logo = messageSource.getMessage("messages.logo", null, locale);
 
         menuList.add(Map.of("name", "정산 실적 조회", "url", "/user/sales/performance")); // ✅ `/sales/performance`로 구체화
         menuList.add(Map.of("name", "판매 실적 조회", "url", "/user/sales/retail")); // ✅ `/sales/retail`로 명확하게 정리

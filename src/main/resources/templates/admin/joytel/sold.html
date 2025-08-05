@@ -296,11 +296,24 @@
 
         function copyRowData(element) {
             let row = element.closest("tr");
-            let rowData = Array.from(row.children).slice(1).map(td => td.innerText.trim());
-            let textToCopy = rowData.join("\t");
+            let rowData = Array.from(row.children).map(td => td.innerText.trim());
+
+            // LPA 중복 제거
+            let lpaValue = rowData[6].replace(/^LPA:/i, '').trim();
+
+            let textToCopy =
+                `주문 번호: ${rowData[1]}\n` +
+                `상품명: ${rowData[2]}\n` +
+                `일자: ${rowData[3]}\n` +
+                `리딤 날짜: ${rowData[4]}\n` +
+                `유효 기간: ${rowData[5]}\n` +
+                `LPA: ${lpaValue}\n` +
+                `국가: ${rowData[7]}\n` +
+                `쿠폰: ${rowData[8]}\n` +
+                `트랜스 아이디: ${rowData[9]}`;
 
             navigator.clipboard.writeText(textToCopy).then(() => {
-                alert("📋 클립보드에 복사되었습니다!");
+                alert(textToCopy);
             }).catch(err => {
                 console.error("복사 실패:", err);
             });

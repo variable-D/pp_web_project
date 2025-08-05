@@ -6,6 +6,7 @@ import com.pp_web_project.util.ExcelExportUtil;
 import com.pp_web_project.util.ProductEnum;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.MessageSource;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,7 @@ import java.util.*;
 public class SalesPerformanceController {
 
     private final SalesPerformanceServiceImpl salesPerformanceService;
+    private final MessageSource messageSource;
 
     @GetMapping("/admin/sales/performance")
     public String adminSalesPerformance(
@@ -35,6 +37,7 @@ public class SalesPerformanceController {
             @RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             @RequestParam(value = "transactionType", required = false) String transactionType,
+            Locale locale,
             Model model) {
 
 
@@ -90,7 +93,7 @@ public class SalesPerformanceController {
             salesData = List.of();
         }
 
-        String logo = "eSIM";
+        String logo = messageSource.getMessage("messages.logo", null, locale);
         List<ProductEnum> productList = Arrays.asList(ProductEnum.values());
 
         BigDecimal totalAmount = salesData.stream()
@@ -207,6 +210,7 @@ public class SalesPerformanceController {
             @RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             @RequestParam(value = "transactionType", required = false) String transactionType,
+            Locale locale,
             Model model) {
 
 
@@ -261,7 +265,7 @@ public class SalesPerformanceController {
             salesData = List.of();
         }
 
-        String logo = "eSIM";
+        String logo = messageSource.getMessage("messages.logo", null, locale);
         List<ProductEnum> productList = Arrays.asList(ProductEnum.values());
 
         BigDecimal totalAmount = salesData.stream()

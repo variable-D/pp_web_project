@@ -6,7 +6,7 @@ server:
       timeout: 5m  # 10분 동안 세션 유지 후 자동 로그아웃
 spring:
   messages:
-    basename: messages, errors
+    basename: messages/messages, messages/errors
   datasource:
     username: root
     password: '0000'

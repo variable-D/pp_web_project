@@ -5,6 +5,8 @@ import com.pp_web_project.service.tcp.impl.RetailServceImpl;
 import com.pp_web_project.util.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.message.Message;
+import org.springframework.context.MessageSource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +34,7 @@ public class RetailController {
     private final ProductAmountUtil productAmountUtil;
     private final ProductPlusSpaceUtil productPlusSpaceUtil;
     private final ProductAndInBoundOrOutBoundEnumUtil productAndInBoundOrOutBoundEnumUtil;
+    private final MessageSource messageSource;
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd");
 
@@ -42,6 +45,7 @@ public class RetailController {
             @RequestParam(value = "product", required = false) String product,
             @RequestParam(value = "startDate", required = false) LocalDate startDate,
             @RequestParam(value = "endDate", required = false) LocalDate endDate,
+            Locale locale,
             Model model) {
 
 
@@ -110,7 +114,7 @@ public class RetailController {
             }
         }
 
-        String logo = "eSIM";
+        String logo = messageSource.getMessage("messages.logo", null, locale);
         List<ProductAndNameEnum> productNameList = Arrays.asList(ProductAndNameEnum.values());
 
         model.addAttribute("categoryList", categoryList);
@@ -220,6 +224,7 @@ public class RetailController {
             @RequestParam(value = "product", required = false) String product,
             @RequestParam(value = "startDate", required = false) LocalDate startDate,
             @RequestParam(value = "endDate", required = false) LocalDate endDate,
+            Locale locale,
             Model model) {
 
 
@@ -289,7 +294,7 @@ public class RetailController {
 
 
 
-        String logo = "eSIM";
+        String logo = messageSource.getMessage("messages.logo", null, locale);
         List<ProductAndNameEnum> productNameList = Arrays.asList(ProductAndNameEnum.values());
 
         model.addAttribute("categoryList", categoryList);

@@ -1,2 +1,5 @@
+로컬에서 admin 디렉토리로 옮기고 그 후 ssh 로 접속한다.
+그리고 아래 명령어를 실행해야 한다.
+sudo mv /home/admin/pp_web.jar /home/prepia/app/
 웹 프로그램 실행 우분투 명령어.
 cd /home/prepia/app/ && nohup java -jar pp_web.jar >> web.log 2>&1 &

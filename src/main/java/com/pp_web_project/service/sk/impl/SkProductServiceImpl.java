@@ -64,6 +64,7 @@ public class SkProductServiceImpl implements SkProductService {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("inbound-api-token", "46w9mt0kGRczOjLV71pD");
 
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(payload, headers);
 

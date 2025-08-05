@@ -7,6 +7,7 @@ import com.pp_web_project.util.JoytelProductCodeAndProductNameEum;
 import com.pp_web_project.util.JoytelProductCodeAndProductNameUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -32,16 +33,18 @@ public class JoytelController {
 
     private final JoytelProductsService joytelProductsService;
     private final JoytelProductCodeAndProductNameUtil joytelProductCodeAndProductNameUtil;
+    private final MessageSource messageSource;
 
 
     @GetMapping("/inventory")
     public String inventory(
             @RequestParam(value = "product", required = false) String products,
             @RequestParam(value = "nation", required = false) String nation,
+            Locale locale,
             Model model
     ) {
 
-        String logo = "eSIM";
+        String logo = messageSource.getMessage("messages.logo", null, locale);
 
         String title = "JOYTEL 재고 현황";
         Map<String, String> categoryList = new LinkedHashMap<>();
@@ -125,9 +128,10 @@ public class JoytelController {
             @RequestParam(value = "product", required = false) String products,
             @RequestParam(value = "orderNumber", required = false) String orderNumber,
             @RequestParam(value = "nation", required = false) String nation,
+            Locale locale,
             Model model
     ) {
-        String logo = "eSIM";
+        String logo = messageSource.getMessage("messages.logo", null, locale);
 
         String title = "JOYTEL 판매 완료된 상품";
         Map<String, String> categoryList = new LinkedHashMap<>();
@@ -233,10 +237,11 @@ public class JoytelController {
     public String expiring(
             @RequestParam(value = "product", required = false) String products,
             @RequestParam(value = "nation", required = false) String nation,
+            Locale locale,
             Model model
     ) {
 
-        String logo = "eSIM";
+        String logo = messageSource.getMessage("messages.logo", null, locale);
 
         String title = "JOYTEL 환불 상품";
         Map<String, String> categoryList = new LinkedHashMap<>();
